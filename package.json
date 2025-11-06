@@ -1,0 +1,19 @@
+{
+  "name": "create-pluto",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "setup": "jiti index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "giget": "^2.0.0",
+    "jiti": "^2.6.1"
+  }
+}
