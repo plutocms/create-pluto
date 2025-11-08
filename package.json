@@ -1,11 +1,17 @@
 {
   "name": "create-pluto",
-  "module": "index.ts",
+  "version": "0.0.1",
+  "module": "./bin/cli.mjs",
   "type": "module",
+  "bin": {
+    "create-pluto": "bin/cli.mjs"
+  },
   "scripts": {
-    "setup": "jiti index.ts"
+    "setup": "jiti src/index.ts",
+    "build": "tsdown"
   },
   "devDependencies": {
+    "prettier": "^3.6.2",
     "tsdown": "^0.16.1"
   },
   "peerDependencies": {
