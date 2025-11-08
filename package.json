@@ -6,7 +6,7 @@
     "setup": "jiti index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "tsdown": "^0.16.1"
   },
   "peerDependencies": {
     "typescript": "^5"
