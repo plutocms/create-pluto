@@ -12,6 +12,26 @@ import fs from 'fs'
 
 const cwd = process.cwd()
 
+// Where you want to download the template
+const templateDir = await text({
+  message: 'Where do you want to create your Pluto project?',
+  placeholder: './my-pluto-project',
+  defaultValue: 'my-pluto-project',
+})
+
+if (isCancel(templateDir)) {
+  cancel('Operation cancelled.')
+
+  process.exit(0)
+}
+
+const templatePath = `${cwd}/${templateDir}`
+
+if (!fs.existsSync(templatePath)) {
+  fs.mkdirSync(templatePath, { recursive: true })
+}
+
+// Ask for website title
 const websiteTitle = await text({
   message: 'Website title:',
   placeholder: 'My Awesome Website',
@@ -24,6 +44,7 @@ if (isCancel(websiteTitle)) {
   process.exit(0)
 }
 
+// Ask for database provider
 const databaseProvider = await select({
   message: 'Pick a database provider.',
   options: [
@@ -81,19 +102,21 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
   }
 }
 
-s.start('Setting things up...')
+log.success('Configuration successful! Proceeding with setup...')
 
-log.success(
-  `Data: ${JSON.stringify({
-    websiteTitle,
-    databaseProvider,
-    supabaseUrl,
-    supabaseKey,
-  })}`
+s.start('Downloading Pluto template...')
+
+const { source } = await downloadTemplate(
+  'gh:plutocms/pluto-minimal-template',
+  {
+    dir: templatePath,
+  }
 )
 
+log.info(`Template downloaded from ${source}`)
+
 // Write to .env file if exists or create a new one
-const envPath = `${cwd}/.env`
+const envPath = `${cwd}/${templateDir}/.env`
 const envVars: Record<string, string> = {
   PLUTO_WEBSITE_TITLE: websiteTitle?.toString() ?? '',
 }
@@ -106,27 +129,35 @@ if (databaseProvider === 'supabase') {
   envVars.SUPABASE_KEY = supabaseKey?.toString() ?? ''
 }
 
-let envContent = ''
-if (fs.existsSync(envPath)) {
-  envContent = fs.readFileSync(envPath, 'utf-8')
+try {
+  let envContent = ''
+  if (fs.existsSync(envPath)) {
+    envContent = fs.readFileSync(envPath, 'utf-8')
 
-  Object.entries(envVars).forEach(([key, value]) => {
-    const regex = new RegExp(`^${key}=.*$`, 'm')
-    if (regex.test(envContent)) {
-      envContent = envContent.replace(regex, `${key}="${value}"`)
-    } else {
-      envContent += `\n${key}="${value}"`
-    }
-  })
-} else {
-  envContent = '# Pluto Configurations\n'
-  Object.entries(envVars).forEach(([key, value]) => {
-    envContent += `${key}="${value}"\n`
-  })
+    Object.entries(envVars).forEach(([key, value]) => {
+      const regex = new RegExp(`^${key}=.*$`, 'm')
+      if (regex.test(envContent)) {
+        envContent = envContent.replace(regex, `${key}="${value}"`)
+      } else {
+        envContent += `\n${key}="${value}"`
+      }
+    })
+  } else {
+    envContent = '# Pluto Configurations\n'
+    Object.entries(envVars).forEach(([key, value]) => {
+      envContent += `${key}="${value}"\n`
+    })
+  }
+
+  fs.writeFileSync(envPath, envContent.trim() + '\n')
+} catch (error) {
+  log.error(`Failed to write to .env file: ${error}`)
+
+  process.exit(1)
 }
-
-fs.writeFileSync(envPath, envContent.trim() + '\n')
 
 s.stop('All done!')
 
 log.success('Setup complete! 🎉')
+
+log.info(`Nuxt project created in: ${templateDir}`)
