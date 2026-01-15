@@ -1,6 +1,6 @@
 {
-  "name": "@plutocms/create-pluto",
-  "version": "0.0.1-alpha.3",
+  "name": "create-pluto",
+  "version": "0.0.1-alpha.1",
   "module": "./bin/cli.mjs",
   "type": "module",
   "bin": {
