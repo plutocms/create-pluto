@@ -1,5 +1,5 @@
 {
-  "name": "create-pluto",
+  "name": "@plutocms/create-pluto",
   "version": "0.0.1",
   "module": "./bin/cli.mjs",
   "type": "module",
@@ -7,12 +7,10 @@
     "create-pluto": "bin/cli.mjs"
   },
   "scripts": {
-    "setup": "jiti src/index.ts",
-    "build": "tsdown"
+    "setup": "node src/index.ts"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
-    "tsdown": "^0.16.1"
+    "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -21,5 +19,27 @@
     "@clack/prompts": "^0.11.0",
     "giget": "^2.0.0",
     "jiti": "^2.6.1"
-  }
+  },
+  "description": "CLI Wizard for creating a Pluto App",
+  "main": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plutocms/pluto.git"
+  },
+  "keywords": [
+    "pluto",
+    "plutocms",
+    "nuxt",
+    "vue",
+    "cms",
+    "wordpress",
+    "headless",
+    "cms"
+  ],
+  "author": "https://github.com/ojvribeiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plutocms/pluto/issues"
+  },
+  "homepage": "https://github.com/plutocms/pluto#readme"
 }
