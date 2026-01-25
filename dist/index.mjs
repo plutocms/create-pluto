@@ -57,7 +57,7 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 }
 log.success("Configuration successful! Proceeding with setup...");
 s.start("Downloading Pluto template...");
-const { source } = await downloadTemplate("gh:plutocms/pluto-minimal-template", { dir: templatePath });
+const { source } = await downloadTemplate("gh:plutocms/pluto-supabase-shop-template", { dir: templatePath });
 log.info(`Template downloaded from ${source}`);
 const envPath = `${cwd}/${templateDir}/.env`;
 const envVars = { PLUTO_WEBSITE_TITLE: websiteTitle?.toString() ?? "" };

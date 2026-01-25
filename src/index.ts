@@ -107,7 +107,7 @@ log.success('Configuration successful! Proceeding with setup...')
 s.start('Downloading Pluto template...')
 
 const { source } = await downloadTemplate(
-  'gh:plutocms/pluto-minimal-template',
+  'gh:plutocms/pluto-supabase-shop-template',
   {
     dir: templatePath,
   }
