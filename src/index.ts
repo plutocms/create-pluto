@@ -9,12 +9,45 @@ import {
 } from '@clack/prompts'
 import { downloadTemplate } from 'giget'
 import fs from 'fs'
+import {
+  setupSupabase,
+  setupSupabaseEnvVars,
+} from './choices/supabase-template.ts'
+
+interface MenuOption {
+  value: string
+  label: string
+  hint?: string
+}
+
+interface Menu {
+  databases: MenuOption[]
+  templates: MenuOption[]
+}
 
 const cwd = process.cwd()
 
 const color = {
   blue: (text: string) => `\x1b[34m${text}\x1b[0m`,
   green: (text: string) => `\x1b[32m${text}\x1b[0m`,
+}
+
+const menu: Menu = {
+  databases: [
+    {
+      value: 'supabase',
+      label: 'Supabase',
+      hint: 'Hosted Postgres Database',
+    },
+  ],
+
+  templates: [
+    {
+      value: 'shop',
+      label: 'Shop (e-commerce)',
+      hint: 'A full-featured online store template',
+    },
+  ],
 }
 
 // Where you want to download the template
@@ -52,10 +85,7 @@ if (isCancel(websiteTitle)) {
 // Ask for database provider
 const databaseProvider = await select({
   message: 'Pick a database provider.',
-  options: [
-    { value: 'supabase', label: 'Supabase' },
-    { value: 'mysql', label: 'MySQL' },
-  ],
+  options: menu.databases,
 })
 
 if (isCancel(databaseProvider)) {
@@ -68,29 +98,20 @@ let supabaseUrl: string | symbol | undefined
 let supabaseKey: string | symbol | undefined
 
 if (databaseProvider === 'supabase') {
-  await setupSupabase()
-}
+  log.warn(
+    `You must have a Supabase project set up. If you do not have one, please create it at:\n${color.blue('https://database.new/')}.`
+  )
 
-async function setupSupabase() {
-  while (!supabaseUrl) {
-    supabaseUrl = await text({
-      message: 'Type/Paste your Supabase URL:',
-    })
+  const { supabaseUrl: url, supabaseKey: key } = await setupSupabase()
 
-    if (!supabaseUrl || typeof supabaseUrl !== 'string') {
-      log.error('Supabase URL is required.')
-    }
+  if (!url || !key) {
+    log.error('Supabase setup failed.')
+
+    process.exit(1)
   }
 
-  while (!supabaseKey) {
-    supabaseKey = await text({
-      message: 'Type/Paste your Supabase Key:',
-    })
-
-    if (!supabaseKey || typeof supabaseKey !== 'string') {
-      log.error('Supabase Key is required.')
-    }
-  }
+  supabaseUrl = url
+  supabaseKey = key
 }
 
 const s = spinner()
@@ -107,18 +128,45 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
   }
 }
 
-log.success('Configuration successful! Proceeding with setup...')
+// Select template
+const templateChoice = await select({
+  message: 'Select a template to use. You can add more layers as needed.',
+  options: menu.templates,
+})
 
-s.start('Downloading Pluto template...')
+if (isCancel(templateChoice)) {
+  cancel('Operation cancelled.')
+
+  process.exit(0)
+}
+
+// Download template
+
+// If folder is not empty, ask for confirmation to continue
+if (fs.readdirSync(templatePath).length > 0) {
+  const shouldContinue = await confirm({
+    message: `The folder ${color.green(
+      templateDir
+    )} is not empty. Do you want to continue and potentially overwrite existing files?`,
+  })
+
+  if (!shouldContinue) {
+    cancel('Operation cancelled.')
+
+    process.exit(0)
+  }
+}
+
+s.start(`Downloading Pluto template...`)
 
 const { source } = await downloadTemplate(
-  'gh:plutocms/pluto-supabase-shop-template',
+  `gh:plutocms/pluto-${databaseProvider}-${templateChoice}-template`,
   {
     dir: templatePath,
   }
 )
 
-log.info(`Template downloaded from ${source}`)
+log.info(`Template downloaded from ${color.green(source)}`)
 
 // Write to .env file if exists or create a new one
 const envPath = `${cwd}/${templateDir}/.env`
@@ -127,11 +175,12 @@ const envVars: Record<string, string> = {
 }
 
 if (databaseProvider === 'supabase') {
-  envVars.SUPABASE_PROJECT_ID = supabaseUrl
-    ? (supabaseUrl.toString().split('//')[1]?.split('.')[0] ?? '')
-    : ''
-  envVars.SUPABASE_URL = supabaseUrl?.toString() ?? ''
-  envVars.SUPABASE_KEY = supabaseKey?.toString() ?? ''
+  const { envVars: supabaseEnvVars } = setupSupabaseEnvVars(
+    supabaseUrl,
+    supabaseKey
+  )
+
+  Object.assign(envVars, supabaseEnvVars)
 }
 
 try {
@@ -165,4 +214,4 @@ s.stop('All done!')
 
 log.success('Setup complete! 🎉')
 
-log.info(`Nuxt project created in: ${templateDir}`)
+log.info(`Nuxt project created in: ${color.green(templateDir)}`)
