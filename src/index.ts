@@ -163,6 +163,7 @@ const { source } = await downloadTemplate(
   `gh:plutocms/pluto-${databaseProvider}-${templateChoice}-template`,
   {
     dir: templatePath,
+    force: true,
   }
 )
 
