@@ -1,10 +1,52 @@
-import { cancel, confirm, isCancel, log, select, spinner, text } from "@clack/prompts";
+import { cancel, confirm, isCancel, log, select, spinner, text as text$1 } from "@clack/prompts";
 import { downloadTemplate } from "giget";
 import fs from "fs";
 
+//#region src/choices/supabase-template.ts
+async function setupSupabase() {
+	let supabaseUrl;
+	let supabaseKey;
+	while (!supabaseUrl) {
+		supabaseUrl = await text$1({ message: "Type/Paste your Supabase URL:" });
+		if (!supabaseUrl || typeof supabaseUrl !== "string") log.error("Supabase URL is required.");
+	}
+	while (!supabaseKey) {
+		supabaseKey = await text$1({ message: "Type/Paste your Supabase Key:" });
+		if (!supabaseKey || typeof supabaseKey !== "string") log.error("Supabase Key is required.");
+	}
+	return {
+		supabaseUrl,
+		supabaseKey
+	};
+}
+function setupSupabaseEnvVars(supabaseUrl, supabaseKey) {
+	let envVars = {};
+	envVars.SUPABASE_PROJECT_ID = supabaseUrl ? supabaseUrl.toString().split("//")[1]?.split(".")[0] ?? "" : "";
+	envVars.SUPABASE_URL = supabaseUrl?.toString() ?? "";
+	envVars.SUPABASE_KEY = supabaseKey?.toString() ?? "";
+	return { envVars };
+}
+
+//#endregion
 //#region src/index.ts
 const cwd = process.cwd();
-const templateDir = await text({
+const color = {
+	blue: (text) => `\x1b[34m${text}\x1b[0m`,
+	green: (text) => `\x1b[32m${text}\x1b[0m`
+};
+const menu = {
+	databases: [{
+		value: "supabase",
+		label: "Supabase",
+		hint: "Hosted Postgres Database"
+	}],
+	templates: [{
+		value: "shop",
+		label: "Shop (e-commerce)",
+		hint: "A full-featured online store template"
+	}]
+};
+const templateDir = await text$1({
 	message: "Where do you want to create your Pluto project?",
 	placeholder: "./my-pluto-project",
 	defaultValue: "my-pluto-project"
@@ -15,7 +57,7 @@ if (isCancel(templateDir)) {
 }
 const templatePath = `${cwd}/${templateDir}`;
 if (!fs.existsSync(templatePath)) fs.mkdirSync(templatePath, { recursive: true });
-const websiteTitle = await text({
+const websiteTitle = await text$1({
 	message: "Website title:",
 	placeholder: "My Awesome Website",
 	defaultValue: "My Awesome Website"
@@ -26,13 +68,7 @@ if (isCancel(websiteTitle)) {
 }
 const databaseProvider = await select({
 	message: "Pick a database provider.",
-	options: [{
-		value: "supabase",
-		label: "Supabase"
-	}, {
-		value: "mysql",
-		label: "MySQL"
-	}]
+	options: menu.databases
 });
 if (isCancel(databaseProvider)) {
 	cancel("Operation cancelled.");
@@ -40,31 +76,45 @@ if (isCancel(databaseProvider)) {
 }
 let supabaseUrl;
 let supabaseKey;
-if (databaseProvider === "supabase") await setupSupabase();
-async function setupSupabase() {
-	while (!supabaseUrl) {
-		supabaseUrl = await text({ message: "Type/Paste your Supabase URL:" });
-		if (!supabaseUrl || typeof supabaseUrl !== "string") log.error("Supabase URL is required.");
+if (databaseProvider === "supabase") {
+	log.warn(`You must have a Supabase project set up. If you do not have one, please create it at:\n${color.blue("https://database.new/")}.`);
+	const { supabaseUrl: url, supabaseKey: key } = await setupSupabase();
+	if (!url || !key) {
+		log.error("Supabase setup failed.");
+		process.exit(1);
 	}
-	while (!supabaseKey) {
-		supabaseKey = await text({ message: "Type/Paste your Supabase Key:" });
-		if (!supabaseKey || typeof supabaseKey !== "string") log.error("Supabase Key is required.");
-	}
+	supabaseUrl = url;
+	supabaseKey = key;
 }
 const s = spinner();
 if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 	if (!await confirm({ message: "Nuxt project detected. Do you want to add Pluto environment variables?" })) process.exit(0);
 }
-log.success("Configuration successful! Proceeding with setup...");
-s.start("Downloading Pluto template...");
-const { source } = await downloadTemplate("gh:plutocms/pluto-supabase-shop-template", { dir: templatePath });
-log.info(`Template downloaded from ${source}`);
+const templateChoice = await select({
+	message: "Select a template to use. You can add more layers as needed.",
+	options: menu.templates
+});
+if (isCancel(templateChoice)) {
+	cancel("Operation cancelled.");
+	process.exit(0);
+}
+if (fs.readdirSync(templatePath).length > 0) {
+	if (!await confirm({ message: `The folder ${color.green(templateDir)} is not empty. Do you want to continue and potentially overwrite existing files?` })) {
+		cancel("Operation cancelled.");
+		process.exit(0);
+	}
+}
+s.start(`Downloading Pluto template...`);
+const { source } = await downloadTemplate(`gh:plutocms/pluto-${databaseProvider}-${templateChoice}-template`, {
+	dir: templatePath,
+	force: true
+});
+log.info(`Template downloaded from ${color.green(source)}`);
 const envPath = `${cwd}/${templateDir}/.env`;
 const envVars = { PLUTO_WEBSITE_TITLE: websiteTitle?.toString() ?? "" };
 if (databaseProvider === "supabase") {
-	envVars.SUPABASE_PROJECT_ID = supabaseUrl ? supabaseUrl.toString().split("//")[1]?.split(".")[0] ?? "" : "";
-	envVars.SUPABASE_URL = supabaseUrl?.toString() ?? "";
-	envVars.SUPABASE_KEY = supabaseKey?.toString() ?? "";
+	const { envVars: supabaseEnvVars } = setupSupabaseEnvVars(supabaseUrl, supabaseKey);
+	Object.assign(envVars, supabaseEnvVars);
 }
 try {
 	let envContent = "";
@@ -88,7 +138,7 @@ try {
 }
 s.stop("All done!");
 log.success("Setup complete! 🎉");
-log.info(`Nuxt project created in: ${templateDir}`);
+log.info(`Nuxt project created in: ${color.green(templateDir)}`);
 
 //#endregion
 export {  };
