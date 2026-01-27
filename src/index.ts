@@ -12,6 +12,11 @@ import fs from 'fs'
 
 const cwd = process.cwd()
 
+const color = {
+  blue: (text: string) => `\x1b[34m${text}\x1b[0m`,
+  green: (text: string) => `\x1b[32m${text}\x1b[0m`,
+}
+
 // Where you want to download the template
 const templateDir = await text({
   message: 'Where do you want to create your Pluto project?',
