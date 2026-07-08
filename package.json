@@ -1,6 +1,6 @@
 {
   "name": "create-pluto",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "module": "./bin/cli.mjs",
   "type": "module",
   "bin": {
@@ -9,13 +9,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/plutocms/pluto.git"
+    "url": "git+https://github.com/plutocms/create-pluto.git"
   },
   "bugs": {
-    "url": "https://github.com/plutocms/pluto/issues"
+    "url": "https://github.com/plutocms/create-pluto/issues"
   },
   "description": "CLI Wizard for creating a Pluto App",
-  "homepage": "https://github.com/plutocms/pluto#readme",
+  "homepage": "https://github.com/plutocms/create-pluto#readme",
   "keywords": [
     "pluto",
     "plutocms",
