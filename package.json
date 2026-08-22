@@ -1,12 +1,11 @@
 {
   "name": "create-pluto",
-  "version": "0.1.0",
-  "module": "./bin/cli.mjs",
   "type": "module",
-  "bin": {
-    "create-pluto": "bin/cli.mjs"
-  },
+  "version": "0.0.1-alpha.4",
+  "description": "CLI Wizard for creating a Pluto App",
+  "author": "https://github.com/ojvribeiro",
   "license": "MIT",
+  "homepage": "https://github.com/plutocms/create-pluto#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/plutocms/create-pluto.git"
@@ -14,8 +13,6 @@
   "bugs": {
     "url": "https://github.com/plutocms/create-pluto/issues"
   },
-  "description": "CLI Wizard for creating a Pluto App",
-  "homepage": "https://github.com/plutocms/create-pluto#readme",
   "keywords": [
     "pluto",
     "plutocms",
@@ -26,19 +23,28 @@
     "headless",
     "cms"
   ],
-  "author": "https://github.com/ojvribeiro",
+  "main": "./src/index.ts",
+  "module": "./bin/cli.mjs",
+  "bin": {
+    "create-pluto": "bin/cli.mjs"
+  },
   "scripts": {
     "setup": "node src/index.ts",
-    "build": "tsdown"
+    "build": "tsdown",
+    "prettier": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix && prettier --write ."
   },
-  "main": "./src/index.ts",
   "dependencies": {
     "@clack/prompts": "^0.11.0",
     "giget": "^3.1.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^7.4.3",
     "@types/node": "^25.0.10",
+    "eslint": "^10.0.0",
     "prettier": "^3.8.1",
-    "tsdown": "^0.20.1"
+    "tsdown": "^0.20.1",
+    "typescript": "^5.9.3"
   }
 }
