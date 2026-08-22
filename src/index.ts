@@ -1,14 +1,15 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import {
-  text,
-  select,
-  spinner,
-  log,
-  isCancel,
   cancel,
   confirm,
+  isCancel,
+  log,
+  select,
+  spinner,
+  text,
 } from '@clack/prompts'
 import { downloadTemplate } from 'giget'
-import fs from 'fs'
 import {
   setupSupabase,
   setupSupabaseEnvVars,
@@ -25,11 +26,16 @@ interface Menu {
   templates: MenuOption[]
 }
 
+interface ParsedArgs {
+  projectDir?: string
+  templateShortcut?: string
+}
+
 const cwd = process.cwd()
 
 const color = {
-  blue: (text: string) => `\x1b[34m${text}\x1b[0m`,
-  green: (text: string) => `\x1b[32m${text}\x1b[0m`,
+  blue: (text: string) => `\x1B[34m${text}\x1B[0m`,
+  green: (text: string) => `\x1B[32m${text}\x1B[0m`,
 }
 
 const menu: Menu = {
@@ -50,12 +56,69 @@ const menu: Menu = {
   ],
 }
 
+function parseCliArgs(argv: string[]): ParsedArgs {
+  const parsedArgs: ParsedArgs = {}
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index]
+
+    if (arg === '-t' || arg === '--template') {
+      parsedArgs.templateShortcut = argv[index + 1]
+      index += 1
+      continue
+    }
+
+    if (arg?.startsWith('--template=')) {
+      parsedArgs.templateShortcut = arg.split('=')[1]
+      continue
+    }
+
+    if (!arg?.startsWith('-') && !parsedArgs.projectDir) {
+      parsedArgs.projectDir = arg
+    }
+  }
+
+  return parsedArgs
+}
+
+function resolveTemplateShortcut(templateShortcut: string) {
+  const [databaseProvider, templateChoice] = templateShortcut.split('-', 2)
+
+  const databaseExists = menu.databases.some(
+    (option) => option.value === databaseProvider
+  )
+  const templateExists = menu.templates.some(
+    (option) => option.value === templateChoice
+  )
+
+  if (!databaseExists || !templateExists) {
+    const availableTemplates = menu.databases.flatMap((database) =>
+      menu.templates.map((template) => `${database.value}-${template.value}`)
+    )
+
+    log.error(
+      `Unknown template \"${templateShortcut}\". Available options: ${availableTemplates.join(', ')}`
+    )
+
+    process.exit(1)
+  }
+
+  return { databaseProvider, templateChoice }
+}
+
+const args = parseCliArgs(process.argv.slice(2))
+const selectedTemplate = args.templateShortcut
+  ? resolveTemplateShortcut(args.templateShortcut)
+  : undefined
+
 // Where you want to download the template
-const templateDir = await text({
-  message: 'Where do you want to create your Pluto project?',
-  placeholder: './my-pluto-project',
-  defaultValue: 'my-pluto-project',
-})
+const templateDir = args.projectDir
+  ? args.projectDir
+  : await text({
+      message: 'Where do you want to create your Pluto project?',
+      placeholder: './my-pluto-project',
+      defaultValue: 'my-pluto-project',
+    })
 
 if (isCancel(templateDir)) {
   cancel('Operation cancelled.')
@@ -63,7 +126,7 @@ if (isCancel(templateDir)) {
   process.exit(0)
 }
 
-const templatePath = `${cwd}/${templateDir}`
+const templatePath = path.resolve(cwd, templateDir)
 
 if (!fs.existsSync(templatePath)) {
   fs.mkdirSync(templatePath, { recursive: true })
@@ -83,10 +146,12 @@ if (isCancel(websiteTitle)) {
 }
 
 // Ask for database provider
-const databaseProvider = await select({
-  message: 'Pick a database provider.',
-  options: menu.databases,
-})
+const databaseProvider = selectedTemplate
+  ? selectedTemplate.databaseProvider
+  : await select({
+      message: 'Pick a database provider.',
+      options: menu.databases,
+    })
 
 if (isCancel(databaseProvider)) {
   cancel('Operation cancelled.')
@@ -129,10 +194,12 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 }
 
 // Select template
-const templateChoice = await select({
-  message: 'Select a template to use. You can add more layers as needed.',
-  options: menu.templates,
-})
+const templateChoice = selectedTemplate
+  ? selectedTemplate.templateChoice
+  : await select({
+      message: 'Select a template to use. You can add more layers as needed.',
+      options: menu.templates,
+    })
 
 if (isCancel(templateChoice)) {
   cancel('Operation cancelled.')
@@ -170,7 +237,7 @@ const { source } = await downloadTemplate(
 log.info(`Template downloaded from ${color.green(source)}`)
 
 // Write to .env file if exists or create a new one
-const envPath = `${cwd}/${templateDir}/.env`
+const envPath = path.resolve(templatePath, '.env')
 const envVars: Record<string, string> = {
   PLUTO_WEBSITE_TITLE: websiteTitle?.toString() ?? '',
 }
@@ -204,7 +271,7 @@ try {
     })
   }
 
-  fs.writeFileSync(envPath, envContent.trim() + '\n')
+  fs.writeFileSync(envPath, `${envContent.trim()}\n`)
 } catch (error) {
   log.error(`Failed to write to .env file: ${error}`)
 

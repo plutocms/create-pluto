@@ -1,4 +1,5 @@
 import { log, text } from '@clack/prompts'
+
 type Value = string | symbol | undefined
 
 // TODO: add validation for Supabase URL and Key
@@ -30,7 +31,7 @@ export async function setupSupabase() {
 }
 
 export function setupSupabaseEnvVars(supabaseUrl: Value, supabaseKey: Value) {
-  let envVars: Record<string, string> = {}
+  const envVars: Record<string, string> = {}
 
   envVars.SUPABASE_PROJECT_ID = supabaseUrl
     ? (supabaseUrl.toString().split('//')[1]?.split('.')[0] ?? '')
