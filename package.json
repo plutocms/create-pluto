@@ -23,11 +23,15 @@
     "headless",
     "cms"
   ],
-  "main": "./src/index.ts",
-  "module": "./bin/cli.mjs",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
   "bin": {
     "create-pluto": "bin/cli.mjs"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "scripts": {
     "setup": "node src/index.ts",
     "build": "tsdown",
@@ -46,5 +50,8 @@
     "prettier": "^3.8.1",
     "tsdown": "^0.20.1",
     "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
