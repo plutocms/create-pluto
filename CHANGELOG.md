@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/plutocms/create-pluto/compare/v0.1.0...v0.2.0) (2026-09-10)
+
+
+### Features
+
+* add blog template to the wizard ([81fc97e](https://github.com/plutocms/create-pluto/commit/81fc97e95368e546bcda32bb26ec679ef3f0a8f9))
+
 ## [0.1.0](https://github.com/plutocms/create-pluto/compare/v0.0.1-alpha.4...v0.1.0) (2026-08-22)
 
 
