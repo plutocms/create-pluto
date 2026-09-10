@@ -18,4 +18,5 @@ Supported template shortcuts currently include:
 
 ```bash
 supabase-shop
+supabase-blog
 ```

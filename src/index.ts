@@ -53,6 +53,11 @@ const menu: Menu = {
       label: 'Shop (e-commerce)',
       hint: 'A full-featured online store template',
     },
+    {
+      value: 'blog',
+      label: 'Blog',
+      hint: 'A simple blog template with a rich text editor',
+    },
   ],
 }
 
