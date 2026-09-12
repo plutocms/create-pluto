@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/plutocms/create-pluto/compare/v0.2.0...v0.3.0) (2026-09-12)
+
+
+### Features
+
+* add FEATURES.md to document implemented project features ([50267f0](https://github.com/plutocms/create-pluto/commit/50267f0f55d5ad27d2388c45ad5fd8edf4bdb4a8))
+
+
+### Bug Fixes
+
+* **env:** write the env vars core actually reads ([#14](https://github.com/plutocms/create-pluto/issues/14)) ([228fe7f](https://github.com/plutocms/create-pluto/commit/228fe7fbe752c84958b87680145d2f504287a9cd))
+
 ## [0.2.0](https://github.com/plutocms/create-pluto/compare/v0.1.0...v0.2.0) (2026-09-10)
 
 
