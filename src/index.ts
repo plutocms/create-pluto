@@ -166,15 +166,20 @@ if (isCancel(databaseProvider)) {
 
 let supabaseUrl: string | symbol | undefined
 let supabaseKey: string | symbol | undefined
+let databaseUrl: string | symbol | undefined
 
 if (databaseProvider === 'supabase') {
   log.warn(
     `You must have a Supabase project set up. If you do not have one, please create it at:\n${color.blue('https://database.new/')}.`
   )
 
-  const { supabaseUrl: url, supabaseKey: key } = await setupSupabase()
+  const {
+    supabaseUrl: url,
+    supabaseKey: key,
+    databaseUrl: connectionString,
+  } = await setupSupabase()
 
-  if (!url || !key) {
+  if (!url || !key || !connectionString) {
     log.error('Supabase setup failed.')
 
     process.exit(1)
@@ -182,6 +187,7 @@ if (databaseProvider === 'supabase') {
 
   supabaseUrl = url
   supabaseKey = key
+  databaseUrl = connectionString
 }
 
 const s = spinner()
@@ -244,13 +250,14 @@ log.info(`Template downloaded from ${color.green(source)}`)
 // Write to .env file if exists or create a new one
 const envPath = path.resolve(templatePath, '.env')
 const envVars: Record<string, string> = {
-  PLUTO_WEBSITE_TITLE: websiteTitle?.toString() ?? '',
+  WEBSITE_NAME: websiteTitle?.toString() ?? '',
 }
 
 if (databaseProvider === 'supabase') {
   const { envVars: supabaseEnvVars } = setupSupabaseEnvVars(
     supabaseUrl,
-    supabaseKey
+    supabaseKey,
+    databaseUrl
   )
 
   Object.assign(envVars, supabaseEnvVars)
