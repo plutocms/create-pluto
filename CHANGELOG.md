@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/plutocms/create-pluto/compare/v0.3.0...v0.3.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* **deps:** upgrade dependencies ([#15](https://github.com/plutocms/create-pluto/issues/15)) ([2838223](https://github.com/plutocms/create-pluto/commit/28382232bff9b1ceef17757e285e20e9a9061fb1))
+
 ## [0.3.0](https://github.com/plutocms/create-pluto/compare/v0.2.0...v0.3.0) (2026-09-12)
 
 
