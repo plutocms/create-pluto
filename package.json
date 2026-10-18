@@ -37,7 +37,7 @@
     "build": "tsdown",
     "prettier": "prettier --write .",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix && prettier --write ."
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
