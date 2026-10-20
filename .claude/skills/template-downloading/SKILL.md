@@ -17,6 +17,7 @@ gh:plutocms/pluto-<database-provider>-<template-choice>-template
 Examples:
 - `gh:plutocms/pluto-supabase-shop-template`
 - `gh:plutocms/pluto-supabase-blog-template`
+- `gh:plutocms/pluto-core-blog-template`
 
 ## Download behavior
 

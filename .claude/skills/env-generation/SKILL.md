@@ -16,7 +16,7 @@ If `.env` does not exist, the CLI creates it with a header comment:
 
 The CLI always writes:
 
-- `WEBSITE_NAME` — The website title from the user prompt.
+- `WEBSITE_NAME` — The website title from the user prompt. For the `core` choice, the name is `NUXT_PUBLIC_WEBSITE_NAME`.
 
 If Supabase is selected as the database provider, the CLI also writes:
 
@@ -25,6 +25,10 @@ If Supabase is selected as the database provider, the CLI also writes:
 - `DATABASE_URL` — The Postgres connection string.
 
 See the Supabase integration skill for how these are obtained.
+
+If `core` is selected, the CLI also writes the `PLUTO_CMS_*` and `NUXT_PLUTO_CMS_*` variables. See the core template skill.
+
+The `writeEnvFile()` function in `src/env.ts` writes the file.
 
 ## Format
 

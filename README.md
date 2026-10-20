@@ -19,4 +19,8 @@ Supported template shortcuts currently include:
 ```bash
 supabase-shop
 supabase-blog
+core-blog
 ```
+
+The `core-blog` template has no database. Posts are Markdown files in a GitHub repository. The
+core option works only with the blog template.

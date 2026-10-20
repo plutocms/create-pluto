@@ -37,7 +37,9 @@
     "build": "tsdown",
     "prettier": "prettier --write .",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-test-module-mocks --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",

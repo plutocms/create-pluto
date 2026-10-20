@@ -14,5 +14,7 @@ policies shared by every project here.
   @.claude/skills/template-downloading/SKILL.md
 - Environment file generation: creates or updates `.env` with configuration variables.
   @.claude/skills/env-generation/SKILL.md
+- Core template (no database): the `core` choice scaffolds the Markdown-in-GitHub blog, asks for
+  GitHub App settings, and writes the `.env` file. @.claude/skills/core-template/SKILL.md
 - Supabase integration: prompts for Supabase credentials and generates corresponding
   environment variables. @.claude/skills/supabase-integration/SKILL.md

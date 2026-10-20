@@ -5,6 +5,9 @@ export default antfu({
   ignores: ['**/*.md', '.github/**'],
 
   rules: {
+    // The tests use the built-in node:test runner. The project has no vitest.
+    'test/no-import-node-test': 'off',
+
     'node/prefer-global/process': ['off', 'never'],
 
     'style/arrow-parens': ['warn', 'always'],

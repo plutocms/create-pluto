@@ -11,20 +11,16 @@ import {
 } from '@clack/prompts'
 import { downloadTemplate } from 'giget'
 import {
+  logCoreNextSteps,
+  setupCore,
+  setupCoreEnvVars,
+} from './choices/core-template.ts'
+import {
   setupSupabase,
   setupSupabaseEnvVars,
 } from './choices/supabase-template.ts'
-
-interface MenuOption {
-  value: string
-  label: string
-  hint?: string
-}
-
-interface Menu {
-  databases: MenuOption[]
-  templates: MenuOption[]
-}
+import { writeEnvFile } from './env.ts'
+import { getTemplatesFor, menu, resolveTemplateShortcut } from './menu.ts'
 
 interface ParsedArgs {
   projectDir?: string
@@ -36,29 +32,6 @@ const cwd = process.cwd()
 const color = {
   blue: (text: string) => `\x1B[34m${text}\x1B[0m`,
   green: (text: string) => `\x1B[32m${text}\x1B[0m`,
-}
-
-const menu: Menu = {
-  databases: [
-    {
-      value: 'supabase',
-      label: 'Supabase',
-      hint: 'Hosted Postgres Database',
-    },
-  ],
-
-  templates: [
-    {
-      value: 'shop',
-      label: 'Shop (e-commerce)',
-      hint: 'A full-featured online store template',
-    },
-    {
-      value: 'blog',
-      label: 'Blog',
-      hint: 'A simple blog template with a rich text editor',
-    },
-  ],
 }
 
 function parseCliArgs(argv: string[]): ParsedArgs {
@@ -86,35 +59,22 @@ function parseCliArgs(argv: string[]): ParsedArgs {
   return parsedArgs
 }
 
-function resolveTemplateShortcut(templateShortcut: string) {
-  const [databaseProvider, templateChoice] = templateShortcut.split('-', 2)
+const args = parseCliArgs(process.argv.slice(2))
+let selectedTemplate:
+  | { databaseProvider: string, templateChoice: string }
+  | undefined
 
-  const databaseExists = menu.databases.some(
-    (option) => option.value === databaseProvider
-  )
-  const templateExists = menu.templates.some(
-    (option) => option.value === templateChoice
-  )
+if (args.templateShortcut) {
+  const result = resolveTemplateShortcut(args.templateShortcut)
 
-  if (!databaseExists || !templateExists) {
-    const availableTemplates = menu.databases.flatMap((database) =>
-      menu.templates.map((template) => `${database.value}-${template.value}`)
-    )
-
-    log.error(
-      `Unknown template \"${templateShortcut}\". Available options: ${availableTemplates.join(', ')}`
-    )
+  if (!result.ok) {
+    log.error(result.message)
 
     process.exit(1)
   }
 
-  return { databaseProvider, templateChoice }
+  selectedTemplate = result
 }
-
-const args = parseCliArgs(process.argv.slice(2))
-const selectedTemplate = args.templateShortcut
-  ? resolveTemplateShortcut(args.templateShortcut)
-  : undefined
 
 // Where you want to download the template
 const templateDir = args.projectDir
@@ -205,12 +165,21 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 }
 
 // Select template
+const templateOptions = getTemplatesFor(String(databaseProvider))
+const onlyTemplate =
+  templateOptions.length === 1 ? templateOptions[0] : undefined
+
+if (onlyTemplate && !selectedTemplate) {
+  log.info(`Using the only template available: ${onlyTemplate.label}`)
+}
+
 const templateChoice = selectedTemplate
   ? selectedTemplate.templateChoice
-  : await select({
+  : (onlyTemplate?.value ??
+    (await select({
       message: 'Select a template to use. You can add more layers as needed.',
-      options: menu.templates,
-    })
+      options: templateOptions,
+    })))
 
 if (isCancel(templateChoice)) {
   cancel('Operation cancelled.')
@@ -249,8 +218,20 @@ log.info(`Template downloaded from ${color.green(source)}`)
 
 // Write to .env file if exists or create a new one
 const envPath = path.resolve(templatePath, '.env')
-const envVars: Record<string, string> = {
-  WEBSITE_NAME: websiteTitle?.toString() ?? '',
+const envVars: Record<string, string> = {}
+let coreValues: Awaited<ReturnType<typeof setupCore>> | undefined
+
+if (databaseProvider === 'core') {
+  // The core template reads its site name from NUXT_PUBLIC_WEBSITE_NAME.
+  envVars.NUXT_PUBLIC_WEBSITE_NAME = websiteTitle?.toString() ?? ''
+
+  // Stop the spinner so it does not draw over the prompts.
+  s.stop('Template downloaded.')
+  coreValues = await setupCore()
+
+  Object.assign(envVars, setupCoreEnvVars(coreValues).envVars)
+} else {
+  envVars.WEBSITE_NAME = websiteTitle?.toString() ?? ''
 }
 
 if (databaseProvider === 'supabase') {
@@ -264,34 +245,21 @@ if (databaseProvider === 'supabase') {
 }
 
 try {
-  let envContent = ''
-  if (fs.existsSync(envPath)) {
-    envContent = fs.readFileSync(envPath, 'utf-8')
-
-    Object.entries(envVars).forEach(([key, value]) => {
-      const regex = new RegExp(`^${key}=.*$`, 'm')
-      if (regex.test(envContent)) {
-        envContent = envContent.replace(regex, `${key}="${value}"`)
-      } else {
-        envContent += `\n${key}="${value}"`
-      }
-    })
-  } else {
-    envContent = '# Pluto Configurations\n'
-    Object.entries(envVars).forEach(([key, value]) => {
-      envContent += `${key}="${value}"\n`
-    })
-  }
-
-  fs.writeFileSync(envPath, `${envContent.trim()}\n`)
+  writeEnvFile(envPath, envVars)
 } catch (error) {
   log.error(`Failed to write to .env file: ${error}`)
 
   process.exit(1)
 }
 
-s.stop('All done!')
+if (!coreValues) {
+  s.stop('All done!')
+}
 
 log.success('Setup complete! 🎉')
 
 log.info(`Nuxt project created in: ${color.green(templateDir)}`)
+
+if (coreValues) {
+  logCoreNextSteps(coreValues)
+}
