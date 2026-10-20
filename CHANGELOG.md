@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/plutocms/create-pluto/compare/v0.4.0...v0.4.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* rebuild the CLI and build it before every publish ([#20](https://github.com/plutocms/create-pluto/issues/20)) ([cf1ae4a](https://github.com/plutocms/create-pluto/commit/cf1ae4a5bc3af265baa82176f4064ec9b15d7ba8))
+
 ## [0.4.0](https://github.com/plutocms/create-pluto/compare/v0.3.1...v0.4.0) (2026-10-20)
 
 
