@@ -35,6 +35,7 @@
   "scripts": {
     "setup": "node src/index.ts",
     "build": "tsdown",
+    "prepack": "tsdown",
     "prettier": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
