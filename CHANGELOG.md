@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/plutocms/create-pluto/compare/v0.3.1...v0.4.0) (2026-10-20)
+
+
+### Features
+
+* add the core (no database) blog template option ([#18](https://github.com/plutocms/create-pluto/issues/18)) ([2b5cc26](https://github.com/plutocms/create-pluto/commit/2b5cc2675f9ddf0514d2588ad2c6a946c9a197c6))
+
 ## [0.3.1](https://github.com/plutocms/create-pluto/compare/v0.3.0...v0.3.1) (2026-10-16)
 
 
