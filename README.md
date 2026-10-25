@@ -6,6 +6,12 @@ A command-line tool to quickly set up a new Pluto CMS project with your preferre
 
 ```bash
 npm create pluto@latest
+
+# or
+pnpm create pluto@latest
+
+# or
+bun create pluto@latest
 ```
 
 You can also pass a target directory and preselect a template shortcut.
