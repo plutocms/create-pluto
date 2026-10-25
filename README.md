@@ -1,6 +1,6 @@
 # create-pluto
 
-A command-line tool to quickly set up a new Pluto CMS project with your preferred configurations.
+A command-line tool to quickly set up a new Pluto project with your preferred configurations.
 
 ## Usage
 
