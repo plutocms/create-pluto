@@ -48,10 +48,14 @@ For `core`, the title goes to `NUXT_PUBLIC_WEBSITE_NAME`. The Supabase templates
 
 At the end, the CLI prints the next steps:
 
-1. Create a GitHub App. See "Set up the CMS" in the template README.
-2. Install the App on the repository.
-3. Fill the empty values in `.env`.
-4. Run `bun run dev`. It works locally with files in the `content/` folder.
+1. Run `bun run dev` and open `/admin`: a local user, files in `content/`, no GitHub App needed.
+2. Deploy, open `/admin/login` on the deployed site and select "Create the GitHub App". The
+   page gives the values for the host, and the install link of the App.
+3. A link to the docs quickstart (`https://pluto.vulmix.dev/github-cms/quickstart`) and to the
+   manual steps in the README of the template.
+
+The CLI adds "Set PLUTO_CMS_REPO in .env, or deploy from a GitHub repository" when the
+repository is empty.
 
 ## Tests
 
