@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/plutocms/create-pluto/compare/v0.4.1...v0.5.0) (2026-10-26)
+
+
+### Features
+
+* **core:** point the next steps to the GitHub App creation ([#29](https://github.com/plutocms/create-pluto/issues/29)) ([cbac0cf](https://github.com/plutocms/create-pluto/commit/cbac0cf58a3fe42bea9fe791eaa74e9c1f877bb3))
+
 ## [0.4.1](https://github.com/plutocms/create-pluto/compare/v0.4.0...v0.4.1) (2026-10-20)
 
 
