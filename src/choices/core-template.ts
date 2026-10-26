@@ -140,14 +140,13 @@ export function setupCoreEnvVars(values: CoreValues, cwd = process.cwd()) {
 
 export function logCoreNextSteps(values: CoreValues) {
   const steps = [
-    'Create a GitHub App. Follow "Set up the CMS" in the template README:\nhttps://github.com/plutocms/pluto-core-blog-template#set-up-the-cms',
-    'Install the App on the repository of your blog.',
-    'Fill the empty GitHub values in .env.',
-    'Run "bun run dev". It works locally with files in the content/ folder.',
+    'Run "bun run dev" and open http://localhost:3000/admin. You are signed in as a local user, and the posts are files in the content/ folder. No GitHub App is needed for this.',
+    'Deploy the site (for example to Vercel). Then open /admin/login on the deployed site and select "Create the GitHub App". Follow the page: paste the values in the environment variables of the host, redeploy, and install the App on the repository of your blog.',
+    'Step by step: "GitHub CMS in 10 minutes" (https://pluto.vulmix.dev/github-cms/quickstart). The manual steps are in the template README:\nhttps://github.com/plutocms/pluto-core-blog-template#set-up-the-cms',
   ]
 
   if (!values.repo) {
-    steps.splice(2, 0, 'Set PLUTO_CMS_REPO in .env.')
+    steps.splice(1, 0, 'Set PLUTO_CMS_REPO in .env, or deploy from a GitHub repository (Vercel gives the repository to Pluto).')
   }
 
   log.info(

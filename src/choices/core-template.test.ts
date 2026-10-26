@@ -221,9 +221,11 @@ describe('core env generation', () => {
     assert.ok(!printed.includes('BEGIN RSA'))
   })
 
-  it('prints the next steps with the README link', () => {
+  it('prints the next steps with the Create the GitHub App step', () => {
     logCoreNextSteps(EMPTY)
 
+    assert.match(logged.join('\n'), /\/admin\/login/)
+    assert.match(logged.join('\n'), /Create the GitHub App/)
     assert.match(logged.join('\n'), /#set-up-the-cms/)
     assert.match(logged.join('\n'), /bun run dev/)
   })
