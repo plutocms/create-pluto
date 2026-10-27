@@ -22,12 +22,12 @@ The CLI asks nothing about GitHub. The site makes the GitHub App itself:
   is needed. Settings > GitHub has the **Create the GitHub App** button, which writes `.env`.
 - After a deploy, `/admin/login` shows the setup check and the **Create the GitHub App** button.
 
-Pluto finds the repository from `PLUTO_CMS_REPO`, from Vercel, or (in development) from the
+Pluto finds the repository from `PLUTO_GITHUB_REPO`, from Vercel, or (in development) from the
 `origin` git remote, so the CLI does not ask for it either.
 
 ## Environment
 
-`setupCoreEnvVars()` in `src/choices/core-template.ts` writes `NUXT_PLUTO_CMS_SESSION_PASSWORD`.
+`setupCoreEnvVars()` in `src/choices/core-template.ts` writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`.
 The value is `crypto.randomBytes(32).toString('base64url')`. It has 43 characters. The website
 title goes to `NUXT_PUBLIC_WEBSITE_NAME`. The Supabase templates still use `WEBSITE_NAME`.
 

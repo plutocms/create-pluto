@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto'
 // so the CLI writes only the session password of the CMS.
 export function setupCoreEnvVars() {
   const envVars: Record<string, string> = {
-    NUXT_PLUTO_CMS_SESSION_PASSWORD: randomBytes(32).toString('base64url'),
+    NUXT_PLUTO_GITHUB_SESSION_PASSWORD: randomBytes(32).toString('base64url'),
   }
 
   return { envVars }
