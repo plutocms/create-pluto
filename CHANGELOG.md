@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/plutocms/create-pluto/compare/v0.6.0...v0.7.0) (2026-10-27)
+
+
+### Features
+
+* write NUXT_PLUTO_GITHUB_SESSION_PASSWORD for the core template ([#33](https://github.com/plutocms/create-pluto/issues/33)) ([a299715](https://github.com/plutocms/create-pluto/commit/a299715a852b6399d9cdc3d4a25ed7e821882247))
+
 ## [0.6.0](https://github.com/plutocms/create-pluto/compare/v0.5.0...v0.6.0) (2026-10-27)
 
 
