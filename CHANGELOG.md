@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/plutocms/create-pluto/compare/v0.5.0...v0.6.0) (2026-10-27)
+
+
+### Features
+
+* ask the package manager, install the dependencies, and drop the GitHub App prompts ([#31](https://github.com/plutocms/create-pluto/issues/31)) ([8a63e35](https://github.com/plutocms/create-pluto/commit/8a63e35df6f3173250f2746d896b9be690a2e223))
+
 ## [0.5.0](https://github.com/plutocms/create-pluto/compare/v0.4.1...v0.5.0) (2026-10-26)
 
 
