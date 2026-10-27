@@ -39,6 +39,18 @@ Not every database works with every template. The `core` option has only the `bl
 
 If an invalid shortcut is passed, the CLI reports the available options and exits with status 1. The shortcut must have exactly two parts. A message like `The "core" option has no "shop" template` tells the user which pair is not valid.
 
+## Package manager and install
+
+- `--pm <name>`, `--pm=<name>`, `--package-manager <name>`: use this package manager and do not
+  ask. The name is one of `npm`, `pnpm`, `yarn`, `bun`, `deno`. Another name stops the CLI with
+  status 1 and the list of names.
+- `--no-install`: do not install the dependencies. The next steps show the install command.
+
+```bash
+create-pluto my-blog -t core-blog --pm bun
+create-pluto my-blog -t core-blog --pm pnpm --no-install
+```
+
 ## Combining arguments
 
 You can use both together:
@@ -47,7 +59,7 @@ You can use both together:
 create-pluto my-project -t supabase-shop
 ```
 
-This sets the directory to `my-project` and selects the `supabase-shop` template. The wizard still prompts for website title and Supabase credentials.
+This sets the directory to `my-project` and selects the `supabase-shop` template. The wizard still prompts for website title, the Supabase credentials and the package manager. Without a terminal, the title and the package manager use their defaults, so `create-pluto my-blog -t core-blog --pm bun` runs with no question.
 
 ## Validation
 

@@ -26,7 +26,7 @@ If Supabase is selected as the database provider, the CLI also writes:
 
 See the Supabase integration skill for how these are obtained.
 
-If `core` is selected, the CLI also writes the `PLUTO_CMS_*` and `NUXT_PLUTO_CMS_*` variables. See the core template skill.
+If `core` is selected, the CLI also writes `NUXT_PLUTO_CMS_SESSION_PASSWORD`. See the core template skill.
 
 The `writeEnvFile()` function in `src/env.ts` writes the file.
 

@@ -1,32 +1,31 @@
 # create-pluto
 
-A command-line tool to quickly set up a new Pluto project with your preferred configurations.
-
-## Usage
+Create a new [Pluto](https://pluto.vulmix.dev) project.
 
 ```bash
 npm create pluto@latest
-
-# or
-pnpm create pluto@latest
-
-# or
-bun create pluto@latest
 ```
 
-You can also pass a target directory and preselect a template shortcut.
+The CLI asks for a folder, a template and a package manager. Then it installs the dependencies
+and shows the command that starts the dev server.
+
+## Options
 
 ```bash
-npm create pluto@latest my-project -t supabase-shop
+npm create pluto@latest my-blog -t core-blog --pm pnpm
 ```
 
-Supported template shortcuts currently include:
+| Option | What it does |
+|---|---|
+| `<folder>` | The project folder. |
+| `-t`, `--template` | `core-blog`, `supabase-blog` or `supabase-shop`. |
+| `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`. |
+| `--no-install` | Do not install the dependencies. |
 
-```bash
-supabase-shop
-supabase-blog
-core-blog
-```
+`core-blog` needs no database: posts are Markdown files in GitHub.
 
-The `core-blog` template has no database. Posts are Markdown files in a GitHub repository. The
-core option works only with the blog template.
+**Docs:** [Create a project](https://pluto.vulmix.dev/getting-started/create-a-project)
+
+## License
+
+MIT
