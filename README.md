@@ -15,12 +15,12 @@ and shows the command that starts the dev server.
 npm create pluto@latest my-blog -t core-blog --pm pnpm
 ```
 
-| Option | What it does |
-|---|---|
-| `<folder>` | The project folder. |
-| `-t`, `--template` | `core-blog`, `supabase-blog` or `supabase-shop`. |
-| `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`. |
-| `--no-install` | Do not install the dependencies. |
+| Option                      | What it does                                     |
+| --------------------------- | ------------------------------------------------ |
+| `<folder>`                  | The project folder.                              |
+| `-t`, `--template`          | `core-blog`, `supabase-blog` or `supabase-shop`. |
+| `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`.          |
+| `--no-install`              | Do not install the dependencies.                 |
 
 `core-blog` needs no database: posts are Markdown files in GitHub.
 
