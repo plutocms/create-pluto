@@ -362,7 +362,7 @@ note(
   [
     ...commands.map((command) => color.cyan(command)),
     '',
-    color.dim('Then open http://localhost:3000/admin'),
+    color.dim('Then open /admin on the dev server.'),
     ...gitNotes,
   ].join('\n'),
   'Next steps'

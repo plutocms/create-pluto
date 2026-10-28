@@ -40,7 +40,7 @@ If `core` is selected, the wizard asks nothing more. The GitHub App is made late
 4. **Next steps** — A short note: `cd <dir>` (when the project is not the current folder; quoted
    when the path has a space), the install command (only when the install did not run), and the
    dev command of the package manager (`runScriptCommand` of `nypm`, for example `bun run dev`
-   or `deno task dev`). Then "Then open http://localhost:3000/admin". The outro links the docs:
+   or `deno task dev`). Then "Then open /admin on the dev server." (no fixed port: Nuxt picks it). The outro links the docs:
    `https://pluto.vulmix.dev/getting-started/create-a-project`. `nextStepCommands()` builds the
    commands and has tests.
 
