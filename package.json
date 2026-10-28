@@ -48,12 +48,12 @@
     "nypm": "^0.6.12"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.7.3",
-    "@types/node": "^25.9.9",
-    "eslint": "^10.12.0",
+    "@antfu/eslint-config": "^10.0.0",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.10",
-    "tsdown": "^0.20.3",
+    "tsdown": "^0.23.2",
     "typescript": "^5.9.3"
   },
   "publishConfig": {
