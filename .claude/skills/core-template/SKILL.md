@@ -1,11 +1,13 @@
 # Core template (no database)
 
 The `core` database choice scaffolds `plutocms/pluto-core-blog-template`. This template has no
-database. Posts are Markdown files in a GitHub repository. Editors sign in with a GitHub App.
+database. Posts are Markdown files in a Git repository. In development it works out of the box with
+local Git: each save in the admin is a commit in the local repo. To publish from a deployed site,
+editors sign in with a GitHub App. Other Git providers are planned.
 
 ## Choice
 
-The choice is `core` with the label `None (Markdown files in GitHub)`. It allows only the
+The choice is `core` with the label `None (Markdown files in Git)`. It allows only the
 `blog` template. The shortcut is `core-blog`:
 
 ```bash
@@ -13,6 +15,15 @@ create-pluto my-blog -t core-blog
 ```
 
 The CLI downloads `gh:plutocms/pluto-core-blog-template`.
+
+## A Git repository from the start
+
+After the install, `initGitRepo` (`src/git.ts`) makes the new folder a Git repo with a first
+commit (`chore: create a Pluto site`), so local Git publishing works on the first save. It does
+nothing inside an existing repo or without Git (a warning). It never commits a `.env` file: the
+template ignores it, and a staged `.env` stops the first commit (`created-without-commit`, as does
+a missing Git author). The next-steps note says that local Git publishing works in development only,
+and that a deployed site needs GitHub (Settings > GitHub). Tests: `src/git.test.ts`.
 
 ## No GitHub App prompts
 
