@@ -31,6 +31,7 @@ A shortcut combines a database provider and a template choice with a hyphen:
 ```
 
 Currently available combinations:
+
 - `supabase-shop` — Supabase + Shop template
 - `supabase-blog` — Supabase + Blog template
 - `core-blog` — No database (Markdown files in GitHub) + Blog template

@@ -88,8 +88,7 @@ function parseCliArgs(argv: string[]): ParsedArgs {
 
 const args = parseCliArgs(process.argv.slice(2))
 let selectedTemplate:
-  | { databaseProvider: string, templateChoice: string }
-  | undefined
+  { databaseProvider: string; templateChoice: string } | undefined
 
 if (args.templateShortcut) {
   const result = resolveTemplateShortcut(args.templateShortcut)
@@ -103,8 +102,13 @@ if (args.templateShortcut) {
   selectedTemplate = result
 }
 
-if (args.packageManager !== undefined && !isSupportedPackageManager(args.packageManager)) {
-  log.error(`Unknown package manager "${args.packageManager}". Use one of: ${PACKAGE_MANAGERS.join(', ')}.`)
+if (
+  args.packageManager !== undefined &&
+  !isSupportedPackageManager(args.packageManager)
+) {
+  log.error(
+    `Unknown package manager "${args.packageManager}". Use one of: ${PACKAGE_MANAGERS.join(', ')}.`
+  )
 
   process.exit(1)
 }
@@ -308,7 +312,11 @@ if (args.install !== false) {
   s.start(`Installing dependencies with ${packageManager}...`)
 
   try {
-    await installDependencies({ cwd: templatePath, packageManager, silent: true })
+    await installDependencies({
+      cwd: templatePath,
+      packageManager,
+      silent: true,
+    })
     installed = true
     s.stop('Dependencies installed.')
   } catch {
@@ -316,7 +324,12 @@ if (args.install !== false) {
   }
 }
 
-const commands = nextStepCommands({ projectPath: templatePath, cwd, packageManager, installed })
+const commands = nextStepCommands({
+  projectPath: templatePath,
+  cwd,
+  packageManager,
+  installed,
+})
 
 note(
   [

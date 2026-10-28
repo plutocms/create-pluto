@@ -18,6 +18,7 @@ The wizard asks for four pieces of information in this order:
 ## Conditional prompts
 
 If Supabase is selected as the database provider, the wizard branches into `setupSupabase()` from `src/choices/supabase-template.ts`. This prompts for three more values:
+
 - Supabase URL
 - Supabase API Key
 - Postgres database connection string

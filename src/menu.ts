@@ -63,8 +63,8 @@ export function getAvailableShortcuts() {
 }
 
 export type ShortcutResult =
-  | { ok: true, databaseProvider: string, templateChoice: string }
-  | { ok: false, message: string }
+  | { ok: true; databaseProvider: string; templateChoice: string }
+  | { ok: false; message: string }
 
 export function resolveTemplateShortcut(
   templateShortcut: string | undefined

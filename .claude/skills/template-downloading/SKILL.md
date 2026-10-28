@@ -15,6 +15,7 @@ gh:plutocms/pluto-<database-provider>-<template-choice>-template
 ```
 
 Examples:
+
 - `gh:plutocms/pluto-supabase-shop-template`
 - `gh:plutocms/pluto-supabase-blog-template`
 - `gh:plutocms/pluto-core-blog-template`
@@ -22,6 +23,7 @@ Examples:
 ## Download behavior
 
 The `downloadTemplate()` call:
+
 - Downloads to the directory the user specified
 - Uses `force: true` to allow overwriting existing files if the user confirmed
 - Returns the `source` URL, which is logged to the user for transparency
