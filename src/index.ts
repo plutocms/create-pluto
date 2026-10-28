@@ -19,6 +19,7 @@ import {
   setupSupabaseEnvVars,
 } from './choices/supabase-template.ts'
 import { writeEnvFile } from './env.ts'
+import { initGitRepo } from './git.ts'
 import { getTemplatesFor, menu, resolveTemplateShortcut } from './menu.ts'
 import {
   detectRunningPackageManager,
@@ -324,6 +325,32 @@ if (args.install !== false) {
   }
 }
 
+// The Markdown CMS publishes to the local Git repo in development: each save is a commit. So the
+// new site starts as a Git repo, after the install (the lockfile goes in the first commit).
+const gitNotes: string[] = []
+if (databaseProvider === 'core') {
+  const result = initGitRepo(templatePath)
+  if (result === 'created') {
+    log.info(
+      'Created a Git repository. In development, each save in the admin is a commit in it.'
+    )
+  } else if (result === 'created-without-commit') {
+    log.info(
+      'Created a Git repository without a first commit (set your Git name and email). In development, each save in the admin is a commit in it.'
+    )
+  } else if (result === 'no-git') {
+    log.warn(
+      'Git is not installed. The admin saves the Markdown files, without commits.'
+    )
+  }
+  gitNotes.push(
+    '',
+    color.dim(
+      'Local Git publishing works in development only. To publish from a deployed site, connect GitHub (Settings > GitHub).'
+    )
+  )
+}
+
 const commands = nextStepCommands({
   projectPath: templatePath,
   cwd,
@@ -336,6 +363,7 @@ note(
     ...commands.map((command) => color.cyan(command)),
     '',
     color.dim('Then open http://localhost:3000/admin'),
+    ...gitNotes,
   ].join('\n'),
   'Next steps'
 )

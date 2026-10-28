@@ -34,7 +34,7 @@ Currently available combinations:
 
 - `supabase-shop` — Supabase + Shop template
 - `supabase-blog` — Supabase + Blog template
-- `core-blog` — No database (Markdown files in GitHub) + Blog template
+- `core-blog` — No database (Markdown files in Git) + Blog template
 
 Not every database works with every template. The `core` option has only the `blog` template, so `core-shop` is not valid.
 

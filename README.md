@@ -22,7 +22,9 @@ npm create pluto@latest my-blog -t core-blog --pm pnpm
 | `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`.          |
 | `--no-install`              | Do not install the dependencies.                 |
 
-`core-blog` needs no database: posts are Markdown files in GitHub.
+`core-blog` needs no database: posts are Markdown files in Git. It works out of the box with local
+Git in development (the CLI creates the repository, and each save is a commit). Connect GitHub to
+publish from a deployed site.
 
 **Docs:** [Create a project](https://pluto.vulmix.dev/getting-started/create-a-project)
 

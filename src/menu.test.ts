@@ -13,8 +13,8 @@ describe('database choices', () => {
 
     assert.deepEqual(core, {
       value: 'core',
-      label: 'None (Markdown files in GitHub)',
-      hint: 'No database. Posts are Markdown files in a GitHub repository',
+      label: 'None (Markdown files in Git)',
+      hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
       templates: ['blog'],
     })
   })
