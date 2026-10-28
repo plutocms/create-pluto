@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/plutocms/create-pluto/compare/v0.7.0...v0.8.0) (2026-10-28)
+
+
+### Features
+
+* a Git repository for the Markdown site, local Git in the texts ([#37](https://github.com/plutocms/create-pluto/issues/37)) ([bde9d69](https://github.com/plutocms/create-pluto/commit/bde9d6945bc07f03f5ff67aaade6699083ab3f6c))
+
 ## [0.7.0](https://github.com/plutocms/create-pluto/compare/v0.6.0...v0.7.0) (2026-10-27)
 
 
