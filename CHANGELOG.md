@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0](https://github.com/plutocms/create-pluto/compare/v0.8.0...v0.9.0) (2026-10-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* a backend choice for the blog, -t blog --backend github|supabase ([#39](https://github.com/plutocms/create-pluto/issues/39))
+
+### Features
+
+* a backend choice for the blog, -t blog --backend github|supabase ([#39](https://github.com/plutocms/create-pluto/issues/39)) ([2016d39](https://github.com/plutocms/create-pluto/commit/2016d39513b02fa239ab31dba40c44b6089ee1d1))
+
 ## [0.8.0](https://github.com/plutocms/create-pluto/compare/v0.7.0...v0.8.0) (2026-10-28)
 
 
