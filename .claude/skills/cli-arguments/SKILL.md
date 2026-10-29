@@ -12,33 +12,28 @@ create-pluto my-project
 
 This sets the project directory without prompting.
 
-## Template shortcut
+## Template and backend
 
-Use the `-t`, `--template`, or `--template=` flag to select a template:
+- `-t <template>`, `--template <template>`, `--template=<template>`: `blog` or `shop`.
+- `--backend <backend>`, `--backend=<backend>`: `github` (the GitHub CMS) or `supabase`.
 
 ```bash
-create-pluto -t supabase-shop
-create-pluto --template supabase-shop
-create-pluto --template=supabase-shop
+create-pluto my-blog -t blog --backend github
+create-pluto my-blog -t blog --backend supabase
+create-pluto my-shop -t shop
 ```
 
-## Template shortcut format
+Not every backend works with every template: the shop needs `supabase`, the blog works with
+both. A template with one backend gets it without a flag (`-t shop` means `supabase`). Without
+`--backend`, the blog asks for it. Without `-t`, the CLI asks for the backend, then for the
+template of that backend.
 
-A shortcut combines a database provider and a template choice with a hyphen:
+The older names are aliases: `core-blog` (`blog` with `github`), `supabase-blog` and
+`supabase-shop`. An alias with another `--backend` (`-t core-blog --backend supabase`) is an
+error.
 
-```
-<database-provider>-<template-choice>
-```
-
-Currently available combinations:
-
-- `supabase-shop` — Supabase + Shop template
-- `supabase-blog` — Supabase + Blog template
-- `core-blog` — No database (Markdown files in Git) + Blog template
-
-Not every database works with every template. The `core` option has only the `blog` template, so `core-shop` is not valid.
-
-If an invalid shortcut is passed, the CLI reports the available options and exits with status 1. The shortcut must have exactly two parts. A message like `The "core" option has no "shop" template` tells the user which pair is not valid.
+A wrong name stops the CLI with status 1 and a message that lists the right names, for example
+`The "shop" template does not work with the "github" backend. Use --backend supabase.`
 
 ## Package manager and install
 
@@ -48,20 +43,20 @@ If an invalid shortcut is passed, the CLI reports the available options and exit
 - `--no-install`: do not install the dependencies. The next steps show the install command.
 
 ```bash
-create-pluto my-blog -t core-blog --pm bun
-create-pluto my-blog -t core-blog --pm pnpm --no-install
+create-pluto my-blog -t blog --backend github --pm bun
+create-pluto my-blog -t blog --backend github --pm pnpm --no-install
 ```
 
 ## Combining arguments
 
-You can use both together:
-
-```bash
-create-pluto my-project -t supabase-shop
-```
-
-This sets the directory to `my-project` and selects the `supabase-shop` template. The wizard still prompts for website title, the Supabase credentials and the package manager. Without a terminal, the title and the package manager use their defaults, so `create-pluto my-blog -t core-blog --pm bun` runs with no question.
+The wizard still prompts for what the flags do not give: the website title, the Supabase
+credentials and the package manager. Without a terminal, the title and the package manager use
+their defaults, so `create-pluto my-blog -t blog --backend github --pm bun` runs with no
+question.
 
 ## Validation
 
-The `parseCliArgs()` function parses all arguments. The `resolveTemplateShortcut()` function in `src/menu.ts` validates the template shortcut. It checks that the database exists, that the template exists, and that the database allows the template. Each database in the menu lists its allowed templates.
+`parseCliArgs()` in `src/index.ts` parses the arguments. `resolveChoice(template, backend)` in
+`src/menu.ts` validates them: it expands an alias, checks that the template and the backend
+exist, and that the backend allows the template (each backend in the menu lists its templates).
+`src/menu.test.ts` tests it.
