@@ -16,9 +16,9 @@ If `.env` does not exist, the CLI creates it with a header comment:
 
 The CLI always writes:
 
-- `WEBSITE_NAME` — The website title from the user prompt. For the `core` choice, the name is `NUXT_PUBLIC_WEBSITE_NAME`.
+- The website title from the user prompt: `NUXT_PUBLIC_WEBSITE_NAME` for the blog (both backends), `WEBSITE_NAME` for the shop.
 
-If Supabase is selected as the database provider, the CLI also writes:
+If Supabase is selected as the backend, the CLI also writes:
 
 - `SUPABASE_URL` — The Supabase project URL.
 - `SUPABASE_KEY` — The Supabase anonymous API key.
@@ -26,7 +26,7 @@ If Supabase is selected as the database provider, the CLI also writes:
 
 See the Supabase integration skill for how these are obtained.
 
-If `core` is selected, the CLI also writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`. See the core template skill.
+If `github` is selected, the CLI also writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`. See the core template skill.
 
 The `writeEnvFile()` function in `src/env.ts` writes the file.
 

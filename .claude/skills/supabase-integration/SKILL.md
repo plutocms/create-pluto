@@ -1,6 +1,6 @@
 # Supabase integration
 
-When Supabase is selected as the database provider, the CLI guides the user through inputting Supabase credentials. These credentials are then written to the `.env` file.
+When Supabase is selected as the backend, the CLI guides the user through inputting Supabase credentials. These credentials are then written to the `.env` file.
 
 ## Setup prompts
 

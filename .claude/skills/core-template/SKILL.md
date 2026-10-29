@@ -1,20 +1,19 @@
-# Core template (no database)
+# The GitHub CMS backend (no database)
 
-The `core` database choice scaffolds `plutocms/pluto-core-blog-template`. This template has no
-database. Posts are Markdown files in a Git repository. In development it works out of the box with
-local Git: each save in the admin is a commit in the local repo. To publish from a deployed site,
-editors sign in with a GitHub App. Other Git providers are planned.
+The `github` backend scaffolds the blog template (`plutocms/pluto-blog-template`) as it is: it
+extends `@plutocms/pluto`. Posts are Markdown files in a Git repository. In development it works
+out of the box with local Git: each save in the admin is a commit in the local repo. To publish
+from a deployed site, editors sign in with a GitHub App. Other Git providers are planned.
 
 ## Choice
 
-The choice is `core` with the label `None (Markdown files in Git)`. It allows only the
-`blog` template. The shortcut is `core-blog`:
+The backend is `github` with the label `GitHub CMS (Markdown files in Git)`. It allows only the
+`blog` template:
 
 ```bash
-create-pluto my-blog -t core-blog
+create-pluto my-blog -t blog --backend github
+create-pluto my-blog -t core-blog   # the older name, the same choice
 ```
-
-The CLI downloads `gh:plutocms/pluto-core-blog-template`.
 
 ## A Git repository from the start
 
@@ -39,8 +38,8 @@ Pluto finds the repository from `PLUTO_GITHUB_REPO`, from Vercel, or (in develop
 ## Environment
 
 `setupCoreEnvVars()` in `src/choices/core-template.ts` writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`.
-The value is `crypto.randomBytes(32).toString('base64url')`. It has 43 characters. The website
-title goes to `NUXT_PUBLIC_WEBSITE_NAME`. The Supabase templates still use `WEBSITE_NAME`.
+The value is `crypto.randomBytes(32).toString('base64url')`. It has 43 characters. The blog (both
+backends) gets the website title in `NUXT_PUBLIC_WEBSITE_NAME`. The shop still uses `WEBSITE_NAME`.
 
 ## Next steps
 

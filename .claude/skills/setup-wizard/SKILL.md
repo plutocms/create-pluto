@@ -7,17 +7,17 @@ This is the core user-facing feature. The CLI prompts for all required configura
 The wizard asks for four pieces of information in this order:
 
 1. **Project directory** — Where to create the project. Defaults to `my-pluto-project`. The user can also pass this as a command-line argument to skip this prompt.
-2. **Website title** — The human-readable name of the site. Defaults to `My Awesome Website`. Without a terminal (a script), the CLI uses the default and does not ask. This is written to the `.env` file as `WEBSITE_NAME`. For the `core` choice, it is written as `NUXT_PUBLIC_WEBSITE_NAME`.
-3. **Database provider** — Which backend to use. Options are `Supabase` and `None (Markdown files in GitHub)` (the `core` choice). If the user passes a template shortcut via CLI, this step is skipped.
-4. **Template choice** — Which template to scaffold. The list shows only the templates that the chosen database allows:
+2. **Website title** — The human-readable name of the site. Defaults to `My Awesome Website`. Without a terminal (a script), the CLI uses the default and does not ask. The blog writes it to the `.env` file as `NUXT_PUBLIC_WEBSITE_NAME` (both backends); the shop writes it as `WEBSITE_NAME`.
+3. **Backend** — `Supabase` or `GitHub CMS (Markdown files in Git)` (`github`). `--backend` skips it. With `-t`, the list shows only the backends of that template, and a template with one backend (the shop) skips it.
+4. **Template choice** — Which template to scaffold. The list shows only the templates that the chosen backend allows:
    - `Shop` (e-commerce). Supabase only.
-   - `Blog` (blog with rich text editor). Supabase and core.
+   - `Blog`. Supabase and GitHub CMS: one template, and the CLI sets the backend in it (see the template-downloading skill).
 
-   If the database has one template, the wizard picks it and does not ask. This is the case for `core`.
+   If the backend has one template, the wizard picks it and does not ask. This is the case for `github`.
 
 ## Conditional prompts
 
-If Supabase is selected as the database provider, the wizard branches into `setupSupabase()` from `src/choices/supabase-template.ts`. This prompts for three more values:
+If Supabase is selected as the backend, the wizard branches into `setupSupabase()` from `src/choices/supabase-template.ts`. This prompts for three more values:
 
 - Supabase URL
 - Supabase API Key
@@ -25,7 +25,7 @@ If Supabase is selected as the database provider, the wizard branches into `setu
 
 See the Supabase integration skill for details on those prompts.
 
-If `core` is selected, the wizard asks nothing more. The GitHub App is made later from the admin of the site. See the core template skill.
+If `github` is selected, the wizard asks nothing more. The GitHub App is made later from the admin of the site. See the core template skill.
 
 ## After the download
 

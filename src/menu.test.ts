@@ -1,95 +1,132 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import {
-  getAvailableShortcuts,
+  getBackendsFor,
   getTemplatesFor,
   menu,
-  resolveTemplateShortcut,
+  resolveChoice,
+  templateSource,
 } from './menu.ts'
 
-describe('database choices', () => {
-  it('has the core choice with the expected shape', () => {
-    const core = menu.databases.find((option) => option.value === 'core')
+describe('backend choices', () => {
+  it('names the GitHub backend after the CMS', () => {
+    const github = menu.backends.find((option) => option.value === 'github')
 
-    assert.deepEqual(core, {
-      value: 'core',
-      label: 'None (Markdown files in Git)',
-      hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
-      templates: ['blog'],
-    })
+    assert.equal(github?.label, 'GitHub CMS (Markdown files in Git)')
+    assert.deepEqual(github?.templates, ['blog'])
   })
 
-  it('keeps the supabase choice', () => {
+  it('gives each backend its templates', () => {
     assert.deepEqual(
       getTemplatesFor('supabase').map((option) => option.value),
       ['shop', 'blog']
     )
-  })
-
-  it('allows only the blog template for core', () => {
     assert.deepEqual(
-      getTemplatesFor('core').map((option) => option.value),
+      getTemplatesFor('github').map((option) => option.value),
       ['blog']
     )
     assert.deepEqual(getTemplatesFor('unknown'), [])
   })
 
-  it('lists only valid shortcuts', () => {
-    assert.deepEqual(getAvailableShortcuts(), [
-      'supabase-shop',
-      'supabase-blog',
-      'core-blog',
-    ])
-  })
-})
-
-describe('resolveTemplateShortcut', () => {
-  it('resolves core-blog', () => {
-    const result = resolveTemplateShortcut('core-blog')
-
-    assert.deepEqual(result, {
-      ok: true,
-      databaseProvider: 'core',
-      templateChoice: 'blog',
-    })
-    assert.ok(result.ok)
-    assert.equal(
-      `gh:plutocms/pluto-${result.databaseProvider}-${result.templateChoice}-template`,
-      'gh:plutocms/pluto-core-blog-template'
+  it('gives each template its backends', () => {
+    assert.deepEqual(
+      getBackendsFor('blog').map((option) => option.value),
+      ['supabase', 'github']
+    )
+    assert.deepEqual(
+      getBackendsFor('shop').map((option) => option.value),
+      ['supabase']
     )
   })
 
-  it('keeps the existing valid pairs working', () => {
-    for (const shortcut of ['supabase-shop', 'supabase-blog']) {
-      assert.equal(resolveTemplateShortcut(shortcut).ok, true)
-    }
+  it('downloads one blog template for both backends', () => {
+    assert.equal(templateSource('blog'), 'gh:plutocms/pluto-blog-template')
+    assert.equal(
+      templateSource('shop'),
+      'gh:plutocms/pluto-supabase-shop-template'
+    )
+  })
+})
+
+describe('resolveChoice', () => {
+  it('leaves both open without flags', () => {
+    assert.deepEqual(resolveChoice(undefined, undefined), {
+      ok: true,
+      template: undefined,
+      backend: undefined,
+    })
   })
 
-  it('rejects core-shop with a clear message', () => {
-    const result = resolveTemplateShortcut('core-shop')
+  it('takes -t blog with --backend', () => {
+    assert.deepEqual(resolveChoice('blog', 'github'), {
+      ok: true,
+      template: 'blog',
+      backend: 'github',
+    })
+    assert.deepEqual(resolveChoice('blog', 'supabase'), {
+      ok: true,
+      template: 'blog',
+      backend: 'supabase',
+    })
+  })
 
-    assert.equal(result.ok, false)
+  it('leaves the blog backend open, and sets the only shop backend', () => {
+    assert.deepEqual(resolveChoice('blog', undefined), {
+      ok: true,
+      template: 'blog',
+      backend: undefined,
+    })
+    assert.deepEqual(resolveChoice('shop', undefined), {
+      ok: true,
+      template: 'shop',
+      backend: 'supabase',
+    })
+  })
+
+  it('keeps the older names as aliases', () => {
+    assert.deepEqual(resolveChoice('core-blog', undefined), {
+      ok: true,
+      template: 'blog',
+      backend: 'github',
+    })
+    assert.deepEqual(resolveChoice('supabase-blog', undefined), {
+      ok: true,
+      template: 'blog',
+      backend: 'supabase',
+    })
+    assert.deepEqual(resolveChoice('supabase-shop', 'supabase'), {
+      ok: true,
+      template: 'shop',
+      backend: 'supabase',
+    })
+  })
+
+  it('rejects an alias with another backend', () => {
+    const result = resolveChoice('core-blog', 'supabase')
+
     assert.ok(!result.ok)
-    assert.match(result.message, /"core" option has no "shop" template/)
-    assert.match(result.message, /core-blog/)
+    assert.match(result.message, /uses the "github" backend/)
   })
 
-  it('rejects unknown, partial and extra-part shortcuts', () => {
-    for (const shortcut of [
-      'nope-blog',
-      'core-nope',
-      'core',
-      '',
-      'core-blog-extra',
-      'supabase-shop-x',
-    ]) {
-      const result = resolveTemplateShortcut(shortcut)
+  it('rejects a backend that the template does not support', () => {
+    const result = resolveChoice('shop', 'github')
 
-      assert.equal(result.ok, false, shortcut)
+    assert.ok(!result.ok)
+    assert.match(result.message, /does not work with the "github" backend/)
+  })
+
+  it('rejects unknown names', () => {
+    for (const [template, backend] of [
+      ['nope', undefined],
+      ['core-shop', undefined],
+      ['blog', 'core'],
+      ['blog', 'nope'],
+    ] as const) {
+      const result = resolveChoice(template, backend)
+
+      assert.equal(result.ok, false, `${template} ${backend}`)
       assert.ok(!result.ok)
-      assert.match(result.message, /Available options:/)
+      assert.match(result.message, /Use -t shop\|blog|Use --backend/)
     }
-
-    assert.equal(resolveTemplateShortcut(undefined).ok, false)
   })
 })

@@ -13,6 +13,7 @@ import {
 } from '@clack/prompts'
 import { downloadTemplate } from 'giget'
 import { installDependencies } from 'nypm'
+import { applyBlogBackend, latestRange } from './blog-backend.ts'
 import { setupCoreEnvVars } from './choices/core-template.ts'
 import {
   setupSupabase,
@@ -20,7 +21,13 @@ import {
 } from './choices/supabase-template.ts'
 import { writeEnvFile } from './env.ts'
 import { initGitRepo } from './git.ts'
-import { getTemplatesFor, menu, resolveTemplateShortcut } from './menu.ts'
+import {
+  getBackendsFor,
+  getTemplatesFor,
+  menu,
+  resolveChoice,
+  templateSource,
+} from './menu.ts'
 import {
   detectRunningPackageManager,
   isSupportedPackageManager,
@@ -31,6 +38,7 @@ import {
 interface ParsedArgs {
   projectDir?: string
   templateShortcut?: string
+  backend?: string
   packageManager?: string
   install?: boolean
 }
@@ -63,6 +71,17 @@ function parseCliArgs(argv: string[]): ParsedArgs {
       continue
     }
 
+    if (arg === '--backend') {
+      parsedArgs.backend = argv[index + 1]
+      index += 1
+      continue
+    }
+
+    if (arg?.startsWith('--backend=')) {
+      parsedArgs.backend = arg.split('=')[1]
+      continue
+    }
+
     if (arg === '--pm' || arg === '--package-manager') {
       parsedArgs.packageManager = argv[index + 1]
       index += 1
@@ -88,19 +107,12 @@ function parseCliArgs(argv: string[]): ParsedArgs {
 }
 
 const args = parseCliArgs(process.argv.slice(2))
-let selectedTemplate:
-  { databaseProvider: string; templateChoice: string } | undefined
+const choice = resolveChoice(args.templateShortcut, args.backend)
 
-if (args.templateShortcut) {
-  const result = resolveTemplateShortcut(args.templateShortcut)
+if (!choice.ok) {
+  log.error(choice.message)
 
-  if (!result.ok) {
-    log.error(result.message)
-
-    process.exit(1)
-  }
-
-  selectedTemplate = result
+  process.exit(1)
 }
 
 if (
@@ -151,15 +163,15 @@ if (isCancel(websiteTitle)) {
   process.exit(0)
 }
 
-// Ask for database provider
-const databaseProvider = selectedTemplate
-  ? selectedTemplate.databaseProvider
-  : await select({
-      message: 'Pick a database provider.',
-      options: menu.databases,
-    })
+// Ask for the backend. A template from the flags offers only its backends.
+const backend =
+  choice.backend ??
+  (await select({
+    message: 'Pick a backend.',
+    options: choice.template ? getBackendsFor(choice.template) : menu.backends,
+  }))
 
-if (isCancel(databaseProvider)) {
+if (isCancel(backend)) {
   cancel('Operation cancelled.')
 
   process.exit(0)
@@ -169,7 +181,7 @@ let supabaseUrl: string | symbol | undefined
 let supabaseKey: string | symbol | undefined
 let databaseUrl: string | symbol | undefined
 
-if (databaseProvider === 'supabase') {
+if (backend === 'supabase') {
   log.warn(
     `You must have a Supabase project set up. If you do not have one, please create it at:\n${color.blue('https://database.new/')}.`
   )
@@ -206,21 +218,21 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 }
 
 // Select template
-const templateOptions = getTemplatesFor(String(databaseProvider))
+const templateOptions = getTemplatesFor(String(backend))
 const onlyTemplate =
   templateOptions.length === 1 ? templateOptions[0] : undefined
 
-if (onlyTemplate && !selectedTemplate) {
+if (onlyTemplate && !choice.template) {
   log.info(`Using the only template available: ${onlyTemplate.label}`)
 }
 
-const templateChoice = selectedTemplate
-  ? selectedTemplate.templateChoice
-  : (onlyTemplate?.value ??
-    (await select({
-      message: 'Select a template to use. You can add more layers as needed.',
-      options: templateOptions,
-    })))
+const templateChoice =
+  choice.template ??
+  onlyTemplate?.value ??
+  (await select({
+    message: 'Select a template to use. You can add more layers as needed.',
+    options: templateOptions,
+  }))
 
 if (isCancel(templateChoice)) {
   cancel('Operation cancelled.')
@@ -248,7 +260,7 @@ if (fs.readdirSync(templatePath).length > 0) {
 s.start(`Downloading Pluto template...`)
 
 const { source } = await downloadTemplate(
-  `gh:plutocms/pluto-${databaseProvider}-${templateChoice}-template`,
+  templateSource(String(templateChoice)),
   {
     dir: templatePath,
     force: true,
@@ -257,20 +269,33 @@ const { source } = await downloadTemplate(
 
 s.stop(`Template downloaded from ${color.green(source)}`)
 
+// The blog is one template for both backends. Set the backend in it.
+if (templateChoice === 'blog') {
+  applyBlogBackend(
+    templatePath,
+    String(backend),
+    backend === 'supabase'
+      ? await latestRange('@plutocms/supabase-blog')
+      : undefined
+  )
+}
+
 // Write to .env file if exists or create a new one
 const envPath = path.resolve(templatePath, '.env')
 const envVars: Record<string, string> = {}
 
-if (databaseProvider === 'core') {
-  // The core template reads its site name from NUXT_PUBLIC_WEBSITE_NAME.
+if (templateChoice === 'blog') {
+  // The blog template reads its site name from NUXT_PUBLIC_WEBSITE_NAME.
   envVars.NUXT_PUBLIC_WEBSITE_NAME = websiteTitle?.toString() ?? ''
-
-  Object.assign(envVars, setupCoreEnvVars().envVars)
 } else {
   envVars.WEBSITE_NAME = websiteTitle?.toString() ?? ''
 }
 
-if (databaseProvider === 'supabase') {
+if (backend === 'github') {
+  Object.assign(envVars, setupCoreEnvVars().envVars)
+}
+
+if (backend === 'supabase') {
   const { envVars: supabaseEnvVars } = setupSupabaseEnvVars(
     supabaseUrl,
     supabaseKey,
@@ -328,7 +353,7 @@ if (args.install !== false) {
 // The Markdown CMS publishes to the local Git repo in development: each save is a commit. So the
 // new site starts as a Git repo, after the install (the lockfile goes in the first commit).
 const gitNotes: string[] = []
-if (databaseProvider === 'core') {
+if (backend === 'github') {
   const result = initGitRepo(templatePath)
   if (result === 'created') {
     log.info(
