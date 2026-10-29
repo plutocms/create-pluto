@@ -4,18 +4,18 @@ export interface MenuOption {
   hint?: string
 }
 
-export interface DatabaseOption extends MenuOption {
-  // The template values this database can use.
+export interface BackendOption extends MenuOption {
+  // The template values this backend can use.
   templates: string[]
 }
 
 export interface Menu {
-  databases: DatabaseOption[]
+  backends: BackendOption[]
   templates: MenuOption[]
 }
 
 export const menu: Menu = {
-  databases: [
+  backends: [
     {
       value: 'supabase',
       label: 'Supabase',
@@ -23,8 +23,8 @@ export const menu: Menu = {
       templates: ['shop', 'blog'],
     },
     {
-      value: 'core',
-      label: 'None (Markdown files in Git)',
+      value: 'github',
+      label: 'GitHub CMS (Markdown files in Git)',
       hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
       templates: ['blog'],
     },
@@ -39,64 +39,96 @@ export const menu: Menu = {
     {
       value: 'blog',
       label: 'Blog',
-      hint: 'A simple blog template with a rich text editor',
+      hint: 'A blog with search, languages and a post editor with a live preview',
     },
   ],
 }
 
-export function getTemplatesFor(databaseProvider: string) {
-  const database = menu.databases.find(
-    (option) => option.value === databaseProvider
-  )
+// The GitHub repository of each template. The blog is one template for both
+// backends: the CLI sets the backend after the download (blog-backend.ts).
+const TEMPLATE_REPOS: Record<string, string> = {
+  blog: 'pluto-blog-template',
+  shop: 'pluto-supabase-shop-template',
+}
+
+export function templateSource(template: string): string {
+  return `gh:plutocms/${TEMPLATE_REPOS[template]}`
+}
+
+export function getTemplatesFor(backend: string) {
+  const option = menu.backends.find((item) => item.value === backend)
 
   return menu.templates.filter((template) =>
-    database?.templates.includes(template.value)
+    option?.templates.includes(template.value)
   )
 }
 
-export function getAvailableShortcuts() {
-  return menu.databases.flatMap((database) =>
-    getTemplatesFor(database.value).map(
-      (template) => `${database.value}-${template.value}`
-    )
-  )
+export function getBackendsFor(template: string) {
+  return menu.backends.filter((backend) => backend.templates.includes(template))
 }
 
-export type ShortcutResult =
-  | { ok: true; databaseProvider: string; templateChoice: string }
+// The older `-t <backend>-<template>` names. `core` was the GitHub backend.
+const ALIASES: Record<string, { template: string; backend: string }> = {
+  'core-blog': { template: 'blog', backend: 'github' },
+  'supabase-blog': { template: 'blog', backend: 'supabase' },
+  'supabase-shop': { template: 'shop', backend: 'supabase' },
+}
+
+export type ChoiceResult =
+  | { ok: true; template?: string; backend?: string }
   | { ok: false; message: string }
 
-export function resolveTemplateShortcut(
-  templateShortcut: string | undefined
-): ShortcutResult {
-  const parts = (templateShortcut ?? '').split('-')
-  const [databaseProvider, templateChoice] = parts
-  const available = `Available options: ${getAvailableShortcuts().join(', ')}`
+/**
+ * Resolves `-t <template>` and `--backend <backend>`. Either can be missing: the CLI asks for
+ * it. A template with one backend (the shop) gets that backend.
+ */
+export function resolveChoice(
+  templateArg: string | undefined,
+  backendArg: string | undefined
+): ChoiceResult {
+  const templates = menu.templates.map((option) => option.value)
+  const backends = menu.backends.map((option) => option.value)
+  const usage = `Use -t ${templates.join('|')} and --backend ${backends.join('|')}.`
 
-  const database = menu.databases.find(
-    (option) => option.value === databaseProvider
-  )
-  const templateExists = menu.templates.some(
-    (option) => option.value === templateChoice
-  )
+  let template = templateArg
+  let backend = backendArg
+  const alias = template ? ALIASES[template] : undefined
 
-  if (parts.length !== 2 || !database || !templateExists) {
-    return {
-      ok: false,
-      message: `Unknown template "${templateShortcut}". ${available}`,
+  if (alias) {
+    if (backend && backend !== alias.backend) {
+      return {
+        ok: false,
+        message: `"-t ${template}" uses the "${alias.backend}" backend, not "${backend}". ${usage}`,
+      }
+    }
+    template = alias.template
+    backend = alias.backend
+  }
+
+  if (template && !templates.includes(template)) {
+    return { ok: false, message: `Unknown template "${template}". ${usage}` }
+  }
+
+  if (backend && !backends.includes(backend)) {
+    return { ok: false, message: `Unknown backend "${backend}". ${usage}` }
+  }
+
+  if (template && backend) {
+    const allowed = getBackendsFor(template).map((option) => option.value)
+    if (!allowed.includes(backend)) {
+      return {
+        ok: false,
+        message: `The "${template}" template does not work with the "${backend}" backend. Use --backend ${allowed.join('|')}.`,
+      }
     }
   }
 
-  if (!database.templates.includes(templateChoice as string)) {
-    return {
-      ok: false,
-      message: `The "${databaseProvider}" option has no "${templateChoice}" template. ${available}`,
+  if (template && !backend) {
+    const allowed = getBackendsFor(template)
+    if (allowed.length === 1) {
+      backend = allowed[0]!.value
     }
   }
 
-  return {
-    ok: true,
-    databaseProvider: databaseProvider as string,
-    templateChoice: templateChoice as string,
-  }
+  return { ok: true, template, backend }
 }
