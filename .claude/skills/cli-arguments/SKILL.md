@@ -14,7 +14,7 @@ This sets the project directory without prompting.
 
 ## Template and backend
 
-- `-t <template>`, `--template <template>`, `--template=<template>`: `blog` or `shop`.
+- `-t <template>`, `--template <template>`, `--template=<template>`: `blog`, `shop` or `admin`.
 - `--backend <backend>`, `--backend=<backend>`: `github` (the GitHub CMS) or `supabase`.
 
 ```bash
@@ -34,6 +34,21 @@ error.
 
 A wrong name stops the CLI with status 1 and a message that lists the right names, for example
 `The "shop" template does not work with the "github" backend. Use --backend supabase.`
+
+## Layers (admin template)
+
+- `--layers <list>`, `--layers=<list>`: the layers to add to the `admin` template, separated by commas.
+  The names are `shop`, `blog` and `3d`. `shop` and `blog` need `--backend supabase`; `3d` works with both.
+  `none` (or an empty value) means no layers.
+
+```bash
+create-pluto my-cms -t admin --backend github --layers 3d
+create-pluto my-cms -t admin --backend supabase --layers shop,3d
+```
+
+Without `--layers`, the CLI asks (a multi-select) with a terminal, and adds no layers without one.
+`--layers` with another template, an unknown name, or a layer the backend does not allow stops the CLI
+with status 1. `resolveLayers()` in `src/layers.ts` validates it.
 
 ## Package manager and install
 

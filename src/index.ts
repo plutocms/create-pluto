@@ -5,6 +5,7 @@ import {
   confirm,
   isCancel,
   log,
+  multiselect,
   note,
   outro,
   select,
@@ -21,6 +22,7 @@ import {
 } from './choices/supabase-template.ts'
 import { writeEnvFile } from './env.ts'
 import { initGitRepo } from './git.ts'
+import { applyAdminTemplate, getLayersFor, resolveLayers } from './layers.ts'
 import {
   getBackendsFor,
   getTemplatesFor,
@@ -41,9 +43,11 @@ interface ParsedArgs {
   backend?: string
   packageManager?: string
   install?: boolean
+  layers?: string
 }
 
-const DOCS_URL = 'https://pluto.vulmix.dev/docs/getting-started/create-a-project'
+const DOCS_URL =
+  'https://pluto.vulmix.dev/docs/getting-started/create-a-project'
 
 const cwd = process.cwd()
 
@@ -93,6 +97,17 @@ function parseCliArgs(argv: string[]): ParsedArgs {
       continue
     }
 
+    if (arg === '--layers') {
+      parsedArgs.layers = argv[index + 1]
+      index += 1
+      continue
+    }
+
+    if (arg?.startsWith('--layers=')) {
+      parsedArgs.layers = arg.slice('--layers='.length)
+      continue
+    }
+
     if (arg === '--no-install') {
       parsedArgs.install = false
       continue
@@ -111,6 +126,15 @@ const choice = resolveChoice(args.templateShortcut, args.backend)
 
 if (!choice.ok) {
   log.error(choice.message)
+
+  process.exit(1)
+}
+
+// A wrong layer name stops the CLI now. The backend can still be open here.
+const layersCheck = resolveLayers(args.layers, choice.backend)
+
+if (!layersCheck.ok) {
+  log.error(layersCheck.message)
 
   process.exit(1)
 }
@@ -240,6 +264,46 @@ if (isCancel(templateChoice)) {
   process.exit(0)
 }
 
+// The admin template can add layers. The flag gives them, else a question (with a terminal), else
+// none.
+let layers: string[] = []
+
+if (templateChoice === 'admin') {
+  const checked = resolveLayers(args.layers, String(backend))
+
+  if (!checked.ok) {
+    log.error(checked.message)
+
+    process.exit(1)
+  }
+
+  if (args.layers !== undefined) {
+    layers = checked.layers
+  } else if (process.stdin.isTTY) {
+    const answer = await multiselect({
+      message: 'Add layers? (space selects, enter continues)',
+      options: getLayersFor(String(backend)).map((layer) => ({
+        value: layer.value,
+        label: layer.label,
+        hint: layer.hint,
+      })),
+      required: false,
+    })
+
+    if (isCancel(answer)) {
+      cancel('Operation cancelled.')
+
+      process.exit(0)
+    }
+
+    layers = answer
+  }
+} else if (args.layers !== undefined) {
+  log.error('--layers works with the "admin" template only.')
+
+  process.exit(1)
+}
+
 // Download template
 
 // If folder is not empty, ask for confirmation to continue
@@ -280,12 +344,17 @@ if (templateChoice === 'blog') {
   )
 }
 
+// The admin template starts on the GitHub CMS. Set the backend and the layers in it.
+if (templateChoice === 'admin') {
+  await applyAdminTemplate(templatePath, String(backend), layers, latestRange)
+}
+
 // Write to .env file if exists or create a new one
 const envPath = path.resolve(templatePath, '.env')
 const envVars: Record<string, string> = {}
 
-if (templateChoice === 'blog') {
-  // The blog template reads its site name from NUXT_PUBLIC_WEBSITE_NAME.
+if (templateChoice === 'blog' || templateChoice === 'admin') {
+  // The blog and admin templates read the site name from NUXT_PUBLIC_WEBSITE_NAME.
   envVars.NUXT_PUBLIC_WEBSITE_NAME = websiteTitle?.toString() ?? ''
 } else {
   envVars.WEBSITE_NAME = websiteTitle?.toString() ?? ''
