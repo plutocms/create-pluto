@@ -31,7 +31,7 @@ describe('backend choices', () => {
   it('gives each template its backends', () => {
     assert.deepEqual(
       getBackendsFor('blog').map((option) => option.value),
-      ['supabase', 'github']
+      ['github', 'supabase']
     )
     assert.deepEqual(
       getBackendsFor('shop').map((option) => option.value),
