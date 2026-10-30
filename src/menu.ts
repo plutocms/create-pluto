@@ -15,18 +15,19 @@ export interface Menu {
 }
 
 export const menu: Menu = {
+  // The GitHub CMS comes first: it needs no account and no database.
   backends: [
-    {
-      value: 'supabase',
-      label: 'Supabase',
-      hint: 'Hosted Postgres Database',
-      templates: ['shop', 'blog'],
-    },
     {
       value: 'github',
       label: 'GitHub CMS (Markdown files in Git)',
       hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
       templates: ['blog'],
+    },
+    {
+      value: 'supabase',
+      label: 'Supabase',
+      hint: 'Hosted Postgres Database',
+      templates: ['shop', 'blog'],
     },
   ],
 
