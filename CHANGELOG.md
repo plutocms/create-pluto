@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/plutocms/create-pluto/compare/v0.10.1...v0.11.0) (2026-10-30)
+
+
+### Features
+
+* the GitHub CMS is the first backend ([#53](https://github.com/plutocms/create-pluto/issues/53)) ([bfe06dc](https://github.com/plutocms/create-pluto/commit/bfe06dcfedb49535a8135caca2f88efbac33e0e5))
+
 ## [0.10.1](https://github.com/plutocms/create-pluto/compare/v0.10.0...v0.10.1) (2026-10-30)
 
 
