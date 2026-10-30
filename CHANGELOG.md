@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/plutocms/create-pluto/compare/v0.10.0...v0.10.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* the docs links point to the new /docs URLs ([#51](https://github.com/plutocms/create-pluto/issues/51)) ([8dff31a](https://github.com/plutocms/create-pluto/commit/8dff31a9b41c3056da293c139e8510761b65cd88))
+
 ## [0.10.0](https://github.com/plutocms/create-pluto/compare/v0.9.0...v0.10.0) (2026-10-30)
 
 
