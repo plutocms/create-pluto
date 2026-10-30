@@ -43,7 +43,7 @@ interface ParsedArgs {
   install?: boolean
 }
 
-const DOCS_URL = 'https://pluto.vulmix.dev/getting-started/create-a-project'
+const DOCS_URL = 'https://pluto.vulmix.dev/docs/getting-started/create-a-project'
 
 const cwd = process.cwd()
 

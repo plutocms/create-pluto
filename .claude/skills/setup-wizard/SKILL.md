@@ -41,7 +41,7 @@ If `github` is selected, the wizard asks nothing more. The GitHub App is made la
    when the path has a space), the install command (only when the install did not run), and the
    dev command of the package manager (`runScriptCommand` of `nypm`, for example `bun run dev`
    or `deno task dev`). Then "Then open /admin on the dev server." (no fixed port: Nuxt picks it). The outro links the docs:
-   `https://pluto.vulmix.dev/getting-started/create-a-project`. `nextStepCommands()` builds the
+   `https://pluto.vulmix.dev/docs/getting-started/create-a-project`. `nextStepCommands()` builds the
    commands and has tests.
 
 ## Safety checks
