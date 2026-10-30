@@ -2,11 +2,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 // The blog template works with both backends. As downloaded, it uses the
-// GitHub CMS: it extends `@plutocms/pluto` and has the sample posts in
+// GitHub CMS: it extends `@plutocms/core` and has the sample posts in
 // `content/`. For Supabase, the CLI changes three things: the layer in
 // nuxt.config.ts, the packages in package.json, and the `content/` folder.
 
-const GITHUB_LAYER = '@plutocms/pluto'
+const GITHUB_LAYER = '@plutocms/core'
+// The old name of core. A template that is not moved yet still extends it.
+const GITHUB_LAYER_OLD = '@plutocms/pluto'
 const SUPABASE_LAYER = '@plutocms/supabase-blog'
 
 // Packages with install scripts that bun must run (the Supabase layers and
@@ -14,7 +16,6 @@ const SUPABASE_LAYER = '@plutocms/supabase-blog'
 const SUPABASE_TRUSTED = [
   '@plutocms/supabase',
   '@plutocms/supabase-blog',
-  '@plutocms/supabase-storage',
   '@plutocms/utils',
   'supabase',
 ]
@@ -34,7 +35,9 @@ export function applyBlogBackend(
 
   const configPath = path.join(dir, 'nuxt.config.ts')
   const config = fs.readFileSync(configPath, 'utf8')
-  const layer = new RegExp(`plutoLayer\\((["'])${GITHUB_LAYER}\\1\\)`)
+  const layer = new RegExp(
+    `plutoLayer\\((["'])(?:${GITHUB_LAYER}|${GITHUB_LAYER_OLD})\\1\\)`
+  )
   if (!layer.test(config)) {
     throw new Error(
       `nuxt.config.ts does not extend plutoLayer("${GITHUB_LAYER}").`
