@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/plutocms/create-pluto/compare/v0.11.0...v0.12.0) (2026-10-30)
+
+
+### Features
+
+* add the Dashboard only template (admin) ([#55](https://github.com/plutocms/create-pluto/issues/55)) ([a9265cf](https://github.com/plutocms/create-pluto/commit/a9265cf893b583cac2858012e5c164268e4a426a))
+
 ## [0.11.0](https://github.com/plutocms/create-pluto/compare/v0.10.1...v0.11.0) (2026-10-30)
 
 
