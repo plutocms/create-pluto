@@ -1,7 +1,7 @@
 # The GitHub CMS backend (no database)
 
 The `github` backend scaffolds the blog template (`plutocms/pluto-blog-template`) as it is: it
-extends `@plutocms/pluto`. Posts are Markdown files in a Git repository. In development it works
+extends `@plutocms/core`. Posts are Markdown files in a Git repository. In development it works
 out of the box with local Git: each save in the admin is a commit in the local repo. To publish
 from a deployed site, editors sign in with a GitHub App. Other Git providers are planned.
 
