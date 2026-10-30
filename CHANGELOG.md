@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/plutocms/create-pluto/compare/v0.9.0...v0.10.0) (2026-10-30)
+
+
+### Features
+
+* the blog template extends @plutocms/core ([#49](https://github.com/plutocms/create-pluto/issues/49)) ([093d91d](https://github.com/plutocms/create-pluto/commit/093d91ddaa83213d0ef94dd82f60575863a4cc69))
+
 ## [0.9.0](https://github.com/plutocms/create-pluto/compare/v0.8.0...v0.9.0) (2026-10-29)
 
 
