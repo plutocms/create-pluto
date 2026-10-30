@@ -12,6 +12,7 @@ The CLI uses the `giget` library to download templates. This library pulls from 
 
 - `blog`: `gh:plutocms/pluto-blog-template` (one template for both backends)
 - `shop`: `gh:plutocms/pluto-supabase-shop-template`
+- `admin`: `gh:plutocms/pluto-admin-template` (Dashboard only: no public site; one template for both backends)
 
 ## The blog backend
 
@@ -24,6 +25,19 @@ sets the backend:
   `plutoLayer("@plutocms/supabase-blog")`; `package.json` gets `@plutocms/supabase-blog` (the
   caret range of its latest version on npm, from `latestRange()`, else `latest`), the
   `supabase-types` script and the Supabase packages in `trustedDependencies`; `content/` goes.
+
+## The admin template and its layers
+
+`applyAdminTemplate(dir, backend, layers, rangeOf)` in `src/layers.ts` sets the backend and the layers of the
+admin template (it extends `@plutocms/core` as downloaded). The shared helpers (`readExtends`,
+`writeExtends`, `updatePackage`, `switchToSupabase`) are in `src/backend.ts`. The blog uses them too.
+
+- `supabase`: the layer becomes `@plutocms/supabase` (as `switchToSupabase` does for the blog).
+- Each picked layer (`shop`, `blog`, `3d`) goes in `extends` and in `dependencies` (the latest caret range).
+- Shop and blog extend `@plutocms/supabase` themselves. When one is picked, `extends` has the feature layers
+  instead of `@plutocms/supabase`, and the package `@plutocms/supabase` leaves `dependencies`.
+- The layers menu (`layerOptions`) shows Shop, Blog and 3D for Supabase, and 3D for the GitHub CMS.
+  Tests: `src/layers.test.ts`.
 
 A config that does not extend `plutoLayer("@plutocms/core")` stops the CLI with an error.
 Tests: `src/blog-backend.test.ts` (a temporary folder, a fake `fetch`).

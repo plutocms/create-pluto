@@ -9,10 +9,11 @@ policies shared by every project here.
 - Interactive setup wizard: prompts for project directory, website title, backend,
   template choice and package manager, installs the dependencies with nypm, and prints short
   next steps. @.claude/skills/setup-wizard/SKILL.md
-- CLI argument support: accepts project directory, `-t blog|shop`, `--backend github|supabase` (the older `core-blog`, `supabase-blog`, `supabase-shop` as aliases), `--pm` and `--no-install`
+- CLI argument support: accepts project directory, `-t blog|shop|admin`, `--layers`, `--backend github|supabase` (the older `core-blog`, `supabase-blog`, `supabase-shop` as aliases), `--pm` and `--no-install`
   to skip interactive prompts. @.claude/skills/cli-arguments/SKILL.md
 - Template downloading: downloads Pluto project templates from GitHub using giget. The blog is one
-  template for both backends; `applyBlogBackend` sets the layer, the packages and `content/`.
+  template for both backends; `applyBlogBackend` sets the layer, the packages and `content/`. The `admin` template (Dashboard only, no public site)
+  works with both backends and can add the Shop, Blog and 3D layers (`applyAdminTemplate`).
   @.claude/skills/template-downloading/SKILL.md
 - Environment file generation: creates or updates `.env` with configuration variables.
   @.claude/skills/env-generation/SKILL.md

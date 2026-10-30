@@ -13,17 +13,17 @@ describe('backend choices', () => {
     const github = menu.backends.find((option) => option.value === 'github')
 
     assert.equal(github?.label, 'GitHub CMS (Markdown files in Git)')
-    assert.deepEqual(github?.templates, ['blog'])
+    assert.deepEqual(github?.templates, ['blog', 'admin'])
   })
 
   it('gives each backend its templates', () => {
     assert.deepEqual(
       getTemplatesFor('supabase').map((option) => option.value),
-      ['shop', 'blog']
+      ['shop', 'blog', 'admin']
     )
     assert.deepEqual(
       getTemplatesFor('github').map((option) => option.value),
-      ['blog']
+      ['blog', 'admin']
     )
     assert.deepEqual(getTemplatesFor('unknown'), [])
   })
@@ -34,9 +34,17 @@ describe('backend choices', () => {
       ['github', 'supabase']
     )
     assert.deepEqual(
+      getBackendsFor('admin').map((option) => option.value),
+      ['github', 'supabase']
+    )
+    assert.deepEqual(
       getBackendsFor('shop').map((option) => option.value),
       ['supabase']
     )
+  })
+
+  it('downloads one admin template for both backends', () => {
+    assert.equal(templateSource('admin'), 'gh:plutocms/pluto-admin-template')
   })
 
   it('downloads one blog template for both backends', () => {

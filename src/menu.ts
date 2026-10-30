@@ -21,13 +21,13 @@ export const menu: Menu = {
       value: 'github',
       label: 'GitHub CMS (Markdown files in Git)',
       hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
-      templates: ['blog'],
+      templates: ['blog', 'admin'],
     },
     {
       value: 'supabase',
       label: 'Supabase',
       hint: 'Hosted Postgres Database',
-      templates: ['shop', 'blog'],
+      templates: ['shop', 'blog', 'admin'],
     },
   ],
 
@@ -42,14 +42,21 @@ export const menu: Menu = {
       label: 'Blog',
       hint: 'A blog with search, languages and a post editor with a live preview',
     },
+    {
+      value: 'admin',
+      label: 'Dashboard only',
+      hint: 'No public site: the Pluto admin and the public API, for a site in any stack',
+    },
   ],
 }
 
 // The GitHub repository of each template. The blog is one template for both
-// backends: the CLI sets the backend after the download (blog-backend.ts).
+// backends: the CLI sets the backend after the download (blog-backend.ts). The admin template
+// works the same way (layers.ts).
 const TEMPLATE_REPOS: Record<string, string> = {
   blog: 'pluto-blog-template',
   shop: 'pluto-supabase-shop-template',
+  admin: 'pluto-admin-template',
 }
 
 export function templateSource(template: string): string {
