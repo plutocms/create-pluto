@@ -35,7 +35,7 @@ The blog is one template for both backends. The CLI sets the backend in it: the 
 The older names still work: `-t core-blog` (`blog` with `github`), `-t supabase-blog` and
 `-t supabase-shop`.
 
-**Docs:** [Create a project](https://pluto.vulmix.dev/getting-started/create-a-project)
+**Docs:** [Create a project](https://pluto.vulmix.dev/docs/getting-started/create-a-project)
 
 ## License
 
