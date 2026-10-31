@@ -15,14 +15,13 @@ beforeEach(() => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pluto-blog-'))
   fs.writeFileSync(
     path.join(dir, 'nuxt.config.ts'),
-    'export default defineNuxtConfig({\n  extends: [plutoLayer("@plutocms/core")],\n})\n'
+    'export default defineNuxtConfig({\n  extends: ["@plutocms/core"],\n})\n'
   )
   fs.writeFileSync(
     path.join(dir, 'package.json'),
     JSON.stringify({
       dependencies: { '@plutocms/core': '^0.33.0', nuxt: '^4.6.3' },
       scripts: { dev: 'nuxt dev' },
-      trustedDependencies: ['@plutocms/core', 'esbuild'],
     })
   )
   fs.mkdirSync(path.join(dir, 'content', 'posts'), { recursive: true })
@@ -39,7 +38,7 @@ describe('applyBlogBackend', () => {
 
     assert.match(
       fs.readFileSync(path.join(dir, 'nuxt.config.ts'), 'utf8'),
-      /plutoLayer\("@plutocms\/core"\)/
+      /"@plutocms\/core"/
     )
     assert.ok(fs.existsSync(path.join(dir, 'content')))
     assert.equal(
@@ -53,7 +52,7 @@ describe('applyBlogBackend', () => {
 
     assert.match(
       fs.readFileSync(path.join(dir, 'nuxt.config.ts'), 'utf8'),
-      /plutoLayer\("@plutocms\/supabase-blog"\)/
+      /"@plutocms\/supabase-blog"/
     )
     assert.ok(!fs.existsSync(path.join(dir, 'content')))
 
@@ -61,27 +60,20 @@ describe('applyBlogBackend', () => {
     assert.equal(pkg.dependencies['@plutocms/supabase-blog'], '^0.15.1')
     assert.equal(pkg.dependencies['@plutocms/core'], '^0.33.0')
     assert.match(pkg.scripts['supabase-types'], /supabase-typegen\.ts/)
-    assert.deepEqual(pkg.trustedDependencies, [
-      '@plutocms/core',
-      '@plutocms/supabase',
-      '@plutocms/supabase-blog',
-      '@plutocms/utils',
-      'esbuild',
-      'supabase',
-    ])
+    assert.equal(pkg.trustedDependencies, undefined)
   })
 
-  it('accepts a template that still extends @plutocms/pluto', () => {
+  it('accepts an older template with plutoLayer and @plutocms/pluto', () => {
     fs.writeFileSync(
       path.join(dir, 'nuxt.config.ts'),
-      'export default defineNuxtConfig({\n  extends: [plutoLayer("@plutocms/pluto")],\n})\n'
+      'import { plutoLayer } from "@plutocms/pluto/layers"\n\nexport default defineNuxtConfig({\n  extends: [plutoLayer("@plutocms/pluto")],\n})\n'
     )
 
     applyBlogBackend(dir, 'supabase', '^0.15.1')
 
-    assert.match(
+    assert.equal(
       fs.readFileSync(path.join(dir, 'nuxt.config.ts'), 'utf8'),
-      /plutoLayer\("@plutocms\/supabase-blog"\)/
+      'export default defineNuxtConfig({\n  extends: ["@plutocms/supabase-blog"],\n})\n'
     )
   })
 
@@ -91,7 +83,10 @@ describe('applyBlogBackend', () => {
       'export default defineNuxtConfig({})\n'
     )
 
-    assert.throws(() => applyBlogBackend(dir, 'supabase'), /plutoLayer/)
+    assert.throws(
+      () => applyBlogBackend(dir, 'supabase'),
+      /does not extend a layer/
+    )
   })
 })
 

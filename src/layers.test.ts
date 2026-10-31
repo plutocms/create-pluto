@@ -21,14 +21,13 @@ beforeEach(() => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pluto-admin-'))
   fs.writeFileSync(
     path.join(dir, 'nuxt.config.ts'),
-    'export default defineNuxtConfig({\n  extends: [plutoLayer("@plutocms/core")],\n  routeRules: { "/": { redirect: "/admin" } },\n})\n'
+    'export default defineNuxtConfig({\n  extends: ["@plutocms/core"],\n  routeRules: { "/": { redirect: "/admin" } },\n})\n'
   )
   fs.writeFileSync(
     path.join(dir, 'package.json'),
     JSON.stringify({
       dependencies: { '@plutocms/core': '^0.38.2', nuxt: '^4.6.3' },
       scripts: { dev: 'nuxt dev' },
-      trustedDependencies: ['@plutocms/core', 'esbuild'],
     })
   )
 })
@@ -102,7 +101,7 @@ describe('applyAdminTemplate', () => {
   it('keeps the template as it is: GitHub CMS, no layers', async () => {
     await applyAdminTemplate(dir, 'github', [], rangeOf)
 
-    assert.match(readConfig(), /extends: \[plutoLayer\("@plutocms\/core"\)\]/)
+    assert.match(readConfig(), /extends: \["@plutocms\/core"\]/)
     assert.equal(
       readJson('package.json').dependencies['@plutocms/3d'],
       undefined
@@ -114,7 +113,7 @@ describe('applyAdminTemplate', () => {
 
     assert.match(
       readConfig(),
-      /extends: \[plutoLayer\("@plutocms\/core"\), plutoLayer\("@plutocms\/3d"\)\]/
+      /extends: \["@plutocms\/core", "@plutocms\/3d"\]/
     )
     assert.match(readConfig(), /routeRules/)
     assert.equal(
@@ -126,23 +125,14 @@ describe('applyAdminTemplate', () => {
   it('switches to @plutocms/supabase without a layer', async () => {
     await applyAdminTemplate(dir, 'supabase', [], rangeOf)
 
-    assert.match(
-      readConfig(),
-      /extends: \[plutoLayer\("@plutocms\/supabase"\)\]/
-    )
+    assert.match(readConfig(), /extends: \["@plutocms\/supabase"\]/)
     const pkg = readJson('package.json')
     assert.equal(
       pkg.dependencies['@plutocms/supabase'],
       '^1.0.0-@plutocms/supabase'
     )
     assert.match(pkg.scripts['supabase-types'], /supabase-typegen\.ts/)
-    assert.deepEqual(pkg.trustedDependencies, [
-      '@plutocms/core',
-      '@plutocms/supabase',
-      '@plutocms/utils',
-      'esbuild',
-      'supabase',
-    ])
+    assert.equal(pkg.trustedDependencies, undefined)
   })
 
   it('extends the feature layers instead of @plutocms/supabase', async () => {
@@ -150,7 +140,7 @@ describe('applyAdminTemplate', () => {
 
     assert.match(
       readConfig(),
-      /extends: \[plutoLayer\("@plutocms\/supabase-shop"\), plutoLayer\("@plutocms\/supabase-blog"\), plutoLayer\("@plutocms\/3d"\)\]/
+      /extends: \["@plutocms\/supabase-shop", "@plutocms\/supabase-blog", "@plutocms\/3d"\]/
     )
     const pkg = readJson('package.json')
     assert.equal(pkg.dependencies['@plutocms/supabase'], undefined)
@@ -160,8 +150,6 @@ describe('applyAdminTemplate', () => {
     )
     assert.ok(pkg.dependencies['@plutocms/supabase-blog'])
     assert.ok(pkg.dependencies['@plutocms/3d'])
-    assert.ok(pkg.trustedDependencies.includes('@plutocms/supabase-shop'))
-    assert.ok(pkg.trustedDependencies.includes('@plutocms/supabase'))
     assert.ok(pkg.scripts['supabase-types'])
   })
 
@@ -170,7 +158,7 @@ describe('applyAdminTemplate', () => {
 
     assert.match(
       readConfig(),
-      /extends: \[plutoLayer\("@plutocms\/supabase"\), plutoLayer\("@plutocms\/3d"\)\]/
+      /extends: \["@plutocms\/supabase", "@plutocms\/3d"\]/
     )
     assert.ok(readJson('package.json').dependencies['@plutocms/supabase'])
   })
