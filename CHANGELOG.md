@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/plutocms/create-pluto/compare/v0.12.0...v0.13.0) (2026-10-31)
+
+
+### Features
+
+* read and write plain layer names, no trustedDependencies ([#57](https://github.com/plutocms/create-pluto/issues/57)) ([7e92243](https://github.com/plutocms/create-pluto/commit/7e922434823a1d2964d0673dbcba00f2f0cdc426))
+
 ## [0.12.0](https://github.com/plutocms/create-pluto/compare/v0.11.0...v0.12.0) (2026-10-30)
 
 
