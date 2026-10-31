@@ -21,10 +21,10 @@ The blog template extends `@plutocms/core` (the GitHub CMS) and has the sample p
 sets the backend:
 
 - `github`: no change.
-- `supabase`: `plutoLayer("@plutocms/core")` in `nuxt.config.ts` becomes
-  `plutoLayer("@plutocms/supabase-blog")`; `package.json` gets `@plutocms/supabase-blog` (the
-  caret range of its latest version on npm, from `latestRange()`, else `latest`), the
-  `supabase-types` script and the Supabase packages in `trustedDependencies`; `content/` goes.
+- `supabase`: `"@plutocms/core"` in `extends` of `nuxt.config.ts` becomes
+  `"@plutocms/supabase-blog"`; `package.json` gets `@plutocms/supabase-blog` (the caret range of
+  its latest version on npm, from `latestRange()`, else `latest`) and the `supabase-types`
+  script; `content/` goes.
 
 ## The admin template and its layers
 
@@ -39,7 +39,11 @@ admin template (it extends `@plutocms/core` as downloaded). The shared helpers (
 - The layers menu (`layerOptions`) shows Shop, Blog and 3D for Supabase, and 3D for the GitHub CMS.
   Tests: `src/layers.test.ts`.
 
-A config that does not extend `plutoLayer("@plutocms/core")` stops the CLI with an error.
+The CLI reads the layers in `extends` as plain names (`"@plutocms/core"`) or as the older
+`plutoLayer("@plutocms/core")`, and writes plain names. It removes a `plutoLayer` import that is
+not used anymore. It writes no `trustedDependencies`: Bun's default list has the packages that
+must run their install scripts. A config that does not extend `@plutocms/core` stops the CLI with
+an error.
 Tests: `src/blog-backend.test.ts` (a temporary folder, a fake `fetch`).
 
 ## Download behavior

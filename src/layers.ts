@@ -18,8 +18,6 @@ export interface LayerOption {
   backends: string[]
   // A layer that extends the backend layer. It replaces that layer in `extends`.
   feature: boolean
-  // Packages with install scripts that bun must run for this layer.
-  trusted: string[]
 }
 
 export const layerOptions: LayerOption[] = [
@@ -30,7 +28,6 @@ export const layerOptions: LayerOption[] = [
     package: '@plutocms/supabase-shop',
     backends: ['supabase'],
     feature: true,
-    trusted: ['@plutocms/supabase-shop'],
   },
   {
     value: 'blog',
@@ -39,7 +36,6 @@ export const layerOptions: LayerOption[] = [
     package: '@plutocms/supabase-blog',
     backends: ['supabase'],
     feature: true,
-    trusted: ['@plutocms/supabase-blog'],
   },
   {
     value: '3d',
@@ -48,7 +44,6 @@ export const layerOptions: LayerOption[] = [
     package: '@plutocms/3d',
     backends: ['github', 'supabase'],
     feature: false,
-    trusted: [],
   },
 ]
 
@@ -136,6 +131,5 @@ export async function applyAdminTemplate(
     dependencies,
     // The feature layer brings `@plutocms/supabase`.
     remove: features.length > 0 ? [SUPABASE_LAYER] : [],
-    trusted: picked.flatMap((layer) => layer.trusted),
   })
 }
