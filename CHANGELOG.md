@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.14.0](https://github.com/plutocms/create-pluto/compare/v0.13.0...v0.14.0) (2026-11-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* the Git CMS backend is "git", not "github" ([#63](https://github.com/plutocms/create-pluto/issues/63))
+
+### Features
+
+* the Git CMS backend is "git", not "github" ([#63](https://github.com/plutocms/create-pluto/issues/63)) ([85b607b](https://github.com/plutocms/create-pluto/commit/85b607b609e063786df16ef866efb77a97ff3923))
+
 ## [0.13.0](https://github.com/plutocms/create-pluto/compare/v0.12.0...v0.13.0) (2026-10-31)
 
 
