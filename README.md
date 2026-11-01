@@ -15,14 +15,14 @@ dependencies and shows the command that starts the dev server.
 npm create pluto@latest my-blog -t blog --backend git --pm pnpm
 ```
 
-| Option                      | What it does                                        |
-| --------------------------- | --------------------------------------------------- |
-| `<folder>`                  | The project folder.                                 |
-| `-t`, `--template`          | `blog`, `shop` or `admin`.                          |
-| `--backend`                 | `git` (Git CMS, the blog only) or `supabase`. |
-| `--layers`                  | Layers to add to `admin`, for example `shop,3d`.    |
-| `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`.             |
-| `--no-install`              | Do not install the dependencies.                    |
+| Option                      | What it does                                     |
+| --------------------------- | ------------------------------------------------ |
+| `<folder>`                  | The project folder.                              |
+| `-t`, `--template`          | `blog`, `shop` or `admin`.                       |
+| `--backend`                 | `git` (the Git CMS) or `supabase`.               |
+| `--layers`                  | Layers to add to `admin`, for example `shop,3d`. |
+| `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`.          |
+| `--no-install`              | Do not install the dependencies.                 |
 
 The blog is one template for both backends. The CLI sets the backend in it: the layer in
 `nuxt.config.ts`, the packages, the sample posts (Git CMS only) and the `.env`.
