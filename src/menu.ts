@@ -15,11 +15,11 @@ export interface Menu {
 }
 
 export const menu: Menu = {
-  // The GitHub CMS comes first: it needs no account and no database.
+  // The Git CMS comes first: it needs no account and no database.
   backends: [
     {
-      value: 'github',
-      label: 'GitHub CMS (Markdown files in Git)',
+      value: 'git',
+      label: 'Git CMS (Markdown files in Git)',
       hint: 'No database. Posts are Markdown files in your Git repository. Works with local Git out of the box; connect GitHub to publish from a deployed site',
       templates: ['blog', 'admin'],
     },
@@ -77,7 +77,7 @@ export function getBackendsFor(template: string) {
 
 // The older `-t <backend>-<template>` names. `core` was the GitHub backend.
 const ALIASES: Record<string, { template: string; backend: string }> = {
-  'core-blog': { template: 'blog', backend: 'github' },
+  'core-blog': { template: 'blog', backend: 'git' },
   'supabase-blog': { template: 'blog', backend: 'supabase' },
   'supabase-shop': { template: 'shop', backend: 'supabase' },
 }

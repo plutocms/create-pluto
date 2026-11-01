@@ -1,17 +1,17 @@
-# The GitHub CMS backend (no database)
+# The Git CMS backend (no database)
 
-The `github` backend scaffolds the blog template (`plutocms/pluto-blog-template`) as it is: it
+The `git` backend scaffolds the blog template (`plutocms/pluto-blog-template`) as it is: it
 extends `@plutocms/core`. Posts are Markdown files in a Git repository. In development it works
 out of the box with local Git: each save in the admin is a commit in the local repo. To publish
 from a deployed site, editors sign in with a GitHub App. Other Git providers are planned.
 
 ## Choice
 
-The backend is `github` with the label `GitHub CMS (Markdown files in Git)`. It allows only the
+The backend is `git` with the label `Git CMS (Markdown files in Git)`. It allows only the
 `blog` template:
 
 ```bash
-create-pluto my-blog -t blog --backend github
+create-pluto my-blog -t blog --backend git
 create-pluto my-blog -t core-blog   # the older name, the same choice
 ```
 

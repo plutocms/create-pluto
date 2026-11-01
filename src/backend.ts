@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 // Helpers that change the layers of a downloaded template. The blog and the
-// admin template both use them: each template starts on the GitHub CMS
+// admin template both use them: each template starts on the Git CMS
 // (`@plutocms/core`), and the CLI switches the layers after the download.
 
 export const GITHUB_LAYER = '@plutocms/core'
@@ -91,7 +91,7 @@ export function updatePackage(dir: string, changes: PackageChanges): void {
 }
 
 /**
- * Switches the base layer of a template from the GitHub CMS to a Supabase layer: the layer in
+ * Switches the base layer of a template from the Git CMS to a Supabase layer: the layer in
  * nuxt.config.ts, the package and the `supabase-types` script. Returns nothing for the GitHub
  * backend: the template stays as it is.
  */

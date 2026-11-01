@@ -16,11 +16,11 @@ The CLI uses the `giget` library to download templates. This library pulls from 
 
 ## The blog backend
 
-The blog template extends `@plutocms/core` (the GitHub CMS) and has the sample posts in
+The blog template extends `@plutocms/core` (the Git CMS) and has the sample posts in
 `content/`. After the download, `applyBlogBackend(dir, backend, range)` in `src/blog-backend.ts`
 sets the backend:
 
-- `github`: no change.
+- `git`: no change.
 - `supabase`: `"@plutocms/core"` in `extends` of `nuxt.config.ts` becomes
   `"@plutocms/supabase-blog"`; `package.json` gets `@plutocms/supabase-blog` (the caret range of
   its latest version on npm, from `latestRange()`, else `latest`) and the `supabase-types`
@@ -36,7 +36,7 @@ admin template (it extends `@plutocms/core` as downloaded). The shared helpers (
 - Each picked layer (`shop`, `blog`, `3d`) goes in `extends` and in `dependencies` (the latest caret range).
 - Shop and blog extend `@plutocms/supabase` themselves. When one is picked, `extends` has the feature layers
   instead of `@plutocms/supabase`, and the package `@plutocms/supabase` leaves `dependencies`.
-- The layers menu (`layerOptions`) shows Shop, Blog and 3D for Supabase, and 3D for the GitHub CMS.
+- The layers menu (`layerOptions`) shows Shop, Blog and 3D for Supabase, and 3D for the Git CMS.
   Tests: `src/layers.test.ts`.
 
 The CLI reads the layers in `extends` as plain names (`"@plutocms/core"`) or as the older

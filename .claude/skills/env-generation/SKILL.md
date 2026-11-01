@@ -26,7 +26,7 @@ If Supabase is selected as the backend, the CLI also writes:
 
 See the Supabase integration skill for how these are obtained.
 
-If `github` is selected, the CLI also writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`. See the core template skill.
+If `git` is selected, the CLI also writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`. See the core template skill.
 
 The `writeEnvFile()` function in `src/env.ts` writes the file.
 

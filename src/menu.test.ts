@@ -10,9 +10,9 @@ import {
 
 describe('backend choices', () => {
   it('names the GitHub backend after the CMS', () => {
-    const github = menu.backends.find((option) => option.value === 'github')
+    const github = menu.backends.find((option) => option.value === 'git')
 
-    assert.equal(github?.label, 'GitHub CMS (Markdown files in Git)')
+    assert.equal(github?.label, 'Git CMS (Markdown files in Git)')
     assert.deepEqual(github?.templates, ['blog', 'admin'])
   })
 
@@ -22,7 +22,7 @@ describe('backend choices', () => {
       ['shop', 'blog', 'admin']
     )
     assert.deepEqual(
-      getTemplatesFor('github').map((option) => option.value),
+      getTemplatesFor('git').map((option) => option.value),
       ['blog', 'admin']
     )
     assert.deepEqual(getTemplatesFor('unknown'), [])
@@ -31,11 +31,11 @@ describe('backend choices', () => {
   it('gives each template its backends', () => {
     assert.deepEqual(
       getBackendsFor('blog').map((option) => option.value),
-      ['github', 'supabase']
+      ['git', 'supabase']
     )
     assert.deepEqual(
       getBackendsFor('admin').map((option) => option.value),
-      ['github', 'supabase']
+      ['git', 'supabase']
     )
     assert.deepEqual(
       getBackendsFor('shop').map((option) => option.value),
@@ -66,10 +66,10 @@ describe('resolveChoice', () => {
   })
 
   it('takes -t blog with --backend', () => {
-    assert.deepEqual(resolveChoice('blog', 'github'), {
+    assert.deepEqual(resolveChoice('blog', 'git'), {
       ok: true,
       template: 'blog',
-      backend: 'github',
+      backend: 'git',
     })
     assert.deepEqual(resolveChoice('blog', 'supabase'), {
       ok: true,
@@ -95,7 +95,7 @@ describe('resolveChoice', () => {
     assert.deepEqual(resolveChoice('core-blog', undefined), {
       ok: true,
       template: 'blog',
-      backend: 'github',
+      backend: 'git',
     })
     assert.deepEqual(resolveChoice('supabase-blog', undefined), {
       ok: true,
@@ -113,14 +113,14 @@ describe('resolveChoice', () => {
     const result = resolveChoice('core-blog', 'supabase')
 
     assert.ok(!result.ok)
-    assert.match(result.message, /uses the "github" backend/)
+    assert.match(result.message, /uses the "git" backend/)
   })
 
   it('rejects a backend that the template does not support', () => {
-    const result = resolveChoice('shop', 'github')
+    const result = resolveChoice('shop', 'git')
 
     assert.ok(!result.ok)
-    assert.match(result.message, /does not work with the "github" backend/)
+    assert.match(result.message, /does not work with the "git" backend/)
   })
 
   it('rejects unknown names', () => {

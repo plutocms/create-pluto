@@ -44,9 +44,9 @@ describe('getLayersFor', () => {
     )
   })
 
-  it('offers only 3D on the GitHub CMS', () => {
+  it('offers only 3D on the Git CMS', () => {
     assert.deepEqual(
-      getLayersFor('github').map((layer) => layer.value),
+      getLayersFor('git').map((layer) => layer.value),
       ['3d']
     )
   })
@@ -68,8 +68,8 @@ describe('resolveLayers', () => {
   })
 
   it('accepts none and an empty value', () => {
-    assert.deepEqual(resolveLayers('none', 'github'), { ok: true, layers: [] })
-    assert.deepEqual(resolveLayers('', 'github'), { ok: true, layers: [] })
+    assert.deepEqual(resolveLayers('none', 'git'), { ok: true, layers: [] })
+    assert.deepEqual(resolveLayers('', 'git'), { ok: true, layers: [] })
   })
 
   it('rejects an unknown layer', () => {
@@ -80,12 +80,12 @@ describe('resolveLayers', () => {
   })
 
   it('rejects a layer that needs another backend', () => {
-    const result = resolveLayers('shop', 'github')
+    const result = resolveLayers('shop', 'git')
 
     assert.equal(result.ok, false)
     assert.match(
       String(!result.ok && result.message),
-      /"shop" layer does not work with the "github" backend/
+      /"shop" layer does not work with the "git" backend/
     )
   })
 
@@ -98,8 +98,8 @@ describe('resolveLayers', () => {
 })
 
 describe('applyAdminTemplate', () => {
-  it('keeps the template as it is: GitHub CMS, no layers', async () => {
-    await applyAdminTemplate(dir, 'github', [], rangeOf)
+  it('keeps the template as it is: Git CMS, no layers', async () => {
+    await applyAdminTemplate(dir, 'git', [], rangeOf)
 
     assert.match(readConfig(), /extends: \["@plutocms\/core"\]/)
     assert.equal(
@@ -108,8 +108,8 @@ describe('applyAdminTemplate', () => {
     )
   })
 
-  it('adds 3D next to core on the GitHub CMS', async () => {
-    await applyAdminTemplate(dir, 'github', ['3d'], rangeOf)
+  it('adds 3D next to core on the Git CMS', async () => {
+    await applyAdminTemplate(dir, 'git', ['3d'], rangeOf)
 
     assert.match(
       readConfig(),

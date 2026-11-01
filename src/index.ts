@@ -344,7 +344,7 @@ if (templateChoice === 'blog') {
   )
 }
 
-// The admin template starts on the GitHub CMS. Set the backend and the layers in it.
+// The admin template starts on the Git CMS. Set the backend and the layers in it.
 if (templateChoice === 'admin') {
   await applyAdminTemplate(templatePath, String(backend), layers, latestRange)
 }
@@ -360,7 +360,7 @@ if (templateChoice === 'blog' || templateChoice === 'admin') {
   envVars.WEBSITE_NAME = websiteTitle?.toString() ?? ''
 }
 
-if (backend === 'github') {
+if (backend === 'git') {
   Object.assign(envVars, setupCoreEnvVars().envVars)
 }
 
@@ -422,7 +422,7 @@ if (args.install !== false) {
 // The Markdown CMS publishes to the local Git repo in development: each save is a commit. So the
 // new site starts as a Git repo, after the install (the lockfile goes in the first commit).
 const gitNotes: string[] = []
-if (backend === 'github') {
+if (backend === 'git') {
   const result = initGitRepo(templatePath)
   if (result === 'created') {
     log.info(
