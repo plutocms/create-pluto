@@ -17,7 +17,7 @@ function git(cwd: string, args: string[]): string {
 }
 
 /**
- * Makes `dir` a Git repo with a first commit, so the GitHub CMS can commit each save to it in
+ * Makes `dir` a Git repo with a first commit, so the Git CMS can commit each save to it in
  * development (local Git publishing). It does nothing when `dir` is already inside a Git repo or
  * when Git is not installed. It never commits a `.env` file: the template ignores it, and a
  * `.env` in the first commit stops the commit (`created-without-commit`). A missing Git author

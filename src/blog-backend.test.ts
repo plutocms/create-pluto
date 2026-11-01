@@ -34,7 +34,7 @@ afterEach(() => {
 
 describe('applyBlogBackend', () => {
   it('keeps the template as it is for the GitHub backend', () => {
-    applyBlogBackend(dir, 'github')
+    applyBlogBackend(dir, 'git')
 
     assert.match(
       fs.readFileSync(path.join(dir, 'nuxt.config.ts'), 'utf8'),

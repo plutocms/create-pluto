@@ -3,14 +3,14 @@ import path from 'node:path'
 import { switchToSupabase } from './backend.ts'
 
 // The blog template works with both backends. As downloaded, it uses the
-// GitHub CMS: it extends `@plutocms/core` and has the sample posts in
+// Git CMS: it extends `@plutocms/core` and has the sample posts in
 // `content/`. For Supabase, the CLI changes three things: the layer in
 // nuxt.config.ts, the packages in package.json, and the `content/` folder.
 
 const SUPABASE_BLOG_LAYER = '@plutocms/supabase-blog'
 
 /**
- * Sets the backend of a downloaded blog template. `github` keeps the template
+ * Sets the backend of a downloaded blog template. `git` keeps the template
  * as it is. `supabase` needs the version range of `@plutocms/supabase-blog`.
  */
 export function applyBlogBackend(

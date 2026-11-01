@@ -42,7 +42,7 @@ export const layerOptions: LayerOption[] = [
     label: '3D',
     hint: 'Show 3D models (works with both backends)',
     package: '@plutocms/3d',
-    backends: ['github', 'supabase'],
+    backends: ['git', 'supabase'],
     feature: false,
   },
 ]

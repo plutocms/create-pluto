@@ -15,10 +15,10 @@ This sets the project directory without prompting.
 ## Template and backend
 
 - `-t <template>`, `--template <template>`, `--template=<template>`: `blog`, `shop` or `admin`.
-- `--backend <backend>`, `--backend=<backend>`: `github` (the GitHub CMS) or `supabase`.
+- `--backend <backend>`, `--backend=<backend>`: `git` (the Git CMS) or `supabase`.
 
 ```bash
-create-pluto my-blog -t blog --backend github
+create-pluto my-blog -t blog --backend git
 create-pluto my-blog -t blog --backend supabase
 create-pluto my-shop -t shop
 ```
@@ -28,12 +28,12 @@ both. A template with one backend gets it without a flag (`-t shop` means `supab
 `--backend`, the blog asks for it. Without `-t`, the CLI asks for the backend, then for the
 template of that backend.
 
-The older names are aliases: `core-blog` (`blog` with `github`), `supabase-blog` and
+The older names are aliases: `core-blog` (`blog` with `git`), `supabase-blog` and
 `supabase-shop`. An alias with another `--backend` (`-t core-blog --backend supabase`) is an
 error.
 
 A wrong name stops the CLI with status 1 and a message that lists the right names, for example
-`The "shop" template does not work with the "github" backend. Use --backend supabase.`
+`The "shop" template does not work with the "git" backend. Use --backend supabase.`
 
 ## Layers (admin template)
 
@@ -42,7 +42,7 @@ A wrong name stops the CLI with status 1 and a message that lists the right name
   `none` (or an empty value) means no layers.
 
 ```bash
-create-pluto my-cms -t admin --backend github --layers 3d
+create-pluto my-cms -t admin --backend git --layers 3d
 create-pluto my-cms -t admin --backend supabase --layers shop,3d
 ```
 
@@ -58,15 +58,15 @@ with status 1. `resolveLayers()` in `src/layers.ts` validates it.
 - `--no-install`: do not install the dependencies. The next steps show the install command.
 
 ```bash
-create-pluto my-blog -t blog --backend github --pm bun
-create-pluto my-blog -t blog --backend github --pm pnpm --no-install
+create-pluto my-blog -t blog --backend git --pm bun
+create-pluto my-blog -t blog --backend git --pm pnpm --no-install
 ```
 
 ## Combining arguments
 
 The wizard still prompts for what the flags do not give: the website title, the Supabase
 credentials and the package manager. Without a terminal, the title and the package manager use
-their defaults, so `create-pluto my-blog -t blog --backend github --pm bun` runs with no
+their defaults, so `create-pluto my-blog -t blog --backend git --pm bun` runs with no
 question.
 
 ## Validation
