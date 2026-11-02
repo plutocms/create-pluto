@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.1](https://github.com/plutocms/create-pluto/compare/v0.14.0...v0.14.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* the CLI links to the new Quickstart page of the docs ([#65](https://github.com/plutocms/create-pluto/issues/65)) ([4c7be91](https://github.com/plutocms/create-pluto/commit/4c7be9133053ec6ac9e1b45a77c268cd359a996b))
+
 ## [0.14.0](https://github.com/plutocms/create-pluto/compare/v0.13.0...v0.14.0) (2026-11-01)
 
 
