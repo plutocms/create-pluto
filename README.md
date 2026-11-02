@@ -46,7 +46,7 @@ npm create pluto@latest my-cms -t admin --backend supabase --layers shop,3d
 The older names still work: `-t core-blog` (`blog` with `git`), `-t supabase-blog` and
 `-t supabase-shop`.
 
-**Docs:** [Create a project](https://pluto.vulmix.dev/docs/getting-started/create-a-project)
+**Docs:** [Quickstart](https://pluto.vulmix.dev/docs/start-here/quickstart)
 
 ## License
 

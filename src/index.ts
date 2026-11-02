@@ -47,7 +47,7 @@ interface ParsedArgs {
 }
 
 const DOCS_URL =
-  'https://pluto.vulmix.dev/docs/getting-started/create-a-project'
+  'https://pluto.vulmix.dev/docs/start-here/quickstart'
 
 const cwd = process.cwd()
 
