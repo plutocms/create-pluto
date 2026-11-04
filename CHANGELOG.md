@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/plutocms/create-pluto/compare/v0.14.1...v0.15.0) (2026-11-04)
+
+
+### Features
+
+* templates from the registry of plutocms/templates, and -t none to start from scratch ([#68](https://github.com/plutocms/create-pluto/issues/68)) ([8c3187e](https://github.com/plutocms/create-pluto/commit/8c3187e00497e32ea44067ea67bd0acda771dea8))
+
 ## [0.14.1](https://github.com/plutocms/create-pluto/compare/v0.14.0...v0.14.1) (2026-11-02)
 
 
