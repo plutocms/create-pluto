@@ -1,9 +1,23 @@
+import type { TemplateEntry } from './registry.ts'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import { applyAdminTemplate, getLayersFor, resolveLayers } from './layers.ts'
+import { getLayersFor, resolveLayers } from './layers.ts'
+import { applyTemplate } from './template.ts'
+
+// The dashboard entry of the registry.
+const dashboard: TemplateEntry = {
+  id: 'dashboard',
+  name: 'Dashboard only',
+  description: '',
+  category: 'dashboard',
+  access: 'free',
+  layers: true,
+  source: '',
+  backends: { git: {}, supabase: { layer: '@plutocms/supabase' } },
+}
 
 let dir: string
 
@@ -97,9 +111,9 @@ describe('resolveLayers', () => {
   })
 })
 
-describe('applyAdminTemplate', () => {
+describe('applyTemplate with layers (the dashboard)', () => {
   it('keeps the template as it is: Git CMS, no layers', async () => {
-    await applyAdminTemplate(dir, 'git', [], rangeOf)
+    await applyTemplate(dir, dashboard, 'git', [], rangeOf)
 
     assert.match(readConfig(), /extends: \["@plutocms\/core"\]/)
     assert.equal(
@@ -109,7 +123,7 @@ describe('applyAdminTemplate', () => {
   })
 
   it('adds 3D next to core on the Git CMS', async () => {
-    await applyAdminTemplate(dir, 'git', ['3d'], rangeOf)
+    await applyTemplate(dir, dashboard, 'git', ['3d'], rangeOf)
 
     assert.match(
       readConfig(),
@@ -123,7 +137,7 @@ describe('applyAdminTemplate', () => {
   })
 
   it('switches to @plutocms/supabase without a layer', async () => {
-    await applyAdminTemplate(dir, 'supabase', [], rangeOf)
+    await applyTemplate(dir, dashboard, 'supabase', [], rangeOf)
 
     assert.match(readConfig(), /extends: \["@plutocms\/supabase"\]/)
     const pkg = readJson('package.json')
@@ -136,7 +150,13 @@ describe('applyAdminTemplate', () => {
   })
 
   it('extends the feature layers instead of @plutocms/supabase', async () => {
-    await applyAdminTemplate(dir, 'supabase', ['shop', 'blog', '3d'], rangeOf)
+    await applyTemplate(
+      dir,
+      dashboard,
+      'supabase',
+      ['shop', 'blog', '3d'],
+      rangeOf
+    )
 
     assert.match(
       readConfig(),
@@ -154,7 +174,7 @@ describe('applyAdminTemplate', () => {
   })
 
   it('adds 3D next to @plutocms/supabase', async () => {
-    await applyAdminTemplate(dir, 'supabase', ['3d'], rangeOf)
+    await applyTemplate(dir, dashboard, 'supabase', ['3d'], rangeOf)
 
     assert.match(
       readConfig(),

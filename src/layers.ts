@@ -1,12 +1,12 @@
 import {
   readExtends,
   SUPABASE_LAYER,
-  switchToSupabase,
   updatePackage,
   writeExtends,
 } from './backend.ts'
 
-// The layers that the admin template can add. A feature layer on Supabase (shop, blog) extends
+// The layers that a template with `layers: true` in the registry (the dashboard, and
+// "Start from scratch") can add. A feature layer on Supabase (shop, blog) extends
 // `@plutocms/supabase` itself, so the app extends the feature layer instead of the backend layer.
 
 export interface LayerOption {
@@ -95,22 +95,17 @@ export function resolveLayers(
 }
 
 /**
- * Sets the backend and the layers of a downloaded admin template. As downloaded, it extends
- * `@plutocms/core`. `rangeOf` gives the version range of a package (the latest on npm).
+ * Adds the layers to a project that already has its backend: the `extends` list and the
+ * packages. A feature layer replaces `@plutocms/supabase`, which it brings. `rangeOf` gives the
+ * version range of a package (the latest on npm).
  */
-export async function applyAdminTemplate(
+export async function addLayers(
   dir: string,
-  backend: string,
   layers: string[],
   rangeOf: (name: string) => Promise<string>
 ): Promise<void> {
   const picked = layerOptions.filter((layer) => layers.includes(layer.value))
   const features = picked.filter((layer) => layer.feature)
-
-  if (backend === 'supabase') {
-    // A feature layer brings `@plutocms/supabase`. Without one, the app extends it itself.
-    switchToSupabase(dir, SUPABASE_LAYER, await rangeOf(SUPABASE_LAYER))
-  }
 
   if (picked.length === 0) {
     return

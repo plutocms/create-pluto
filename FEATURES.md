@@ -7,13 +7,14 @@ See the workspace-level `CLAUDE.md` (one directory up) for the delegation, writi
 policies shared by every project here.
 
 - Interactive setup wizard: prompts for project directory, website title, backend,
-  template choice and package manager, installs the dependencies with nypm, and prints short
+  template choice (the starters of the registry, then "Start from scratch") and package manager, installs the dependencies with nypm, and prints short
   next steps. @.claude/skills/setup-wizard/SKILL.md
-- CLI argument support: accepts project directory, `-t blog|shop|admin`, `--layers`, `--backend git|supabase` (the older `core-blog`, `supabase-blog`, `supabase-shop` as aliases), `--pm` and `--no-install`
+- CLI argument support: accepts project directory, `-t <id>` (any free template of the registry, `none` from scratch), `--layers`, `--backend git|supabase`, `--pm` and `--no-install`
   to skip interactive prompts. @.claude/skills/cli-arguments/SKILL.md
-- Template downloading: downloads Pluto project templates from GitHub using giget. The blog is one
-  template for both backends; `applyBlogBackend` sets the layer, the packages and `content/`. The `admin` template (Dashboard only, no public site)
-  works with both backends and can add the Shop, Blog and 3D layers (`applyAdminTemplate`).
+- Template downloading: reads the registry of `plutocms/templates` (`templates.json`), downloads the
+  folder of a template with giget, names the project after its folder, and applies the backend
+  changes of the registry and the layers (`applyTemplate`). `-t none` writes a bare project
+  (`writeScratchProject`).
   @.claude/skills/template-downloading/SKILL.md
 - Environment file generation: creates or updates `.env` with configuration variables.
   @.claude/skills/env-generation/SKILL.md

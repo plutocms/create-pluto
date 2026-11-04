@@ -1,65 +1,53 @@
 # Template downloading
 
-After gathering all user inputs, the CLI downloads a complete Pluto project template from GitHub.
+The CLI starts a project from a template of the templates repo, or from scratch (`-t none`).
 
-## Mechanism
+## The registry
 
-The CLI uses the `giget` library to download templates. This library pulls from GitHub repositories with the `gh:` prefix.
+The templates are in `plutocms/templates`: each folder `templates/<id>/` is a project, and
+`templates.json` at the root is the registry. `src/registry.ts`:
 
-## Template sources
+- `fetchRegistry()` reads `REGISTRY_URL` (the raw `templates.json` on `main`).
+  `PLUTO_TEMPLATES_URL` overrides it; a value that is not an http(s) URL is a local file (to test
+  a registry before it is pushed). A registry with `version` other than 1 is refused.
+- An entry (`TemplateEntry`): `id`, `name`, `description`, `category`, `access`
+  (`free` / `premium`), `starter` (in the menu), `layers` (the CLI can add layers), `source` (a
+  giget source, `gh:plutocms/templates/templates/<id>`), `demo`, and `backends`: per backend the
+  changes `{ layer?, remove? }`. As downloaded, a template uses the Git CMS (or its only backend).
+- `allTemplates(registry)` is the registry plus `scratchTemplate` (`id: 'none'`, both backends,
+  `layers: true`, last in the menu).
+- The CLI loads the registry first, except for `-t none`. With a `-t` and no registry, it stops.
+  Without a `-t`, it warns and offers "Start from scratch" only.
 
-`templateSource(template)` in `src/menu.ts` gives the repository of each template:
+## The menu and the flags
 
-- `blog`: `gh:plutocms/pluto-blog-template` (one template for both backends)
-- `shop`: `gh:plutocms/pluto-supabase-shop-template`
-- `admin`: `gh:plutocms/pluto-admin-template` (Dashboard only: no public site; one template for both backends)
+`src/menu.ts`: `backends` (Git CMS first), `getTemplatesFor(templates, backend)` (the starters
+of a backend), `getBackendsFor(template)`, and `resolveChoice(templates, -t, --backend)`: any
+template of the registry, not only a starter; a premium one is refused ("The CLI cannot download
+it yet"); a template with one backend gets it. The old names (`core-blog`, `supabase-blog`,
+`admin`, `shop`) are gone. Tests: `src/menu.test.ts`.
 
-## The blog backend
+## Download and changes
 
-The blog template extends `@plutocms/core` (the Git CMS) and has the sample posts in
-`content/`. After the download, `applyBlogBackend(dir, backend, range)` in `src/blog-backend.ts`
-sets the backend:
+- giget downloads `template.source` (the folder only) with `force: true`. `setPackageName(dir)`
+  then names the project after its folder (`packageNameOf`: `My Blog` gives `my-blog`).
+- `-t none`: `writeScratchProject(dir, rangeOf)` writes `package.json` (the latest caret ranges
+  of `@plutocms/core`, `nuxt`, `vue`, `vue-router`; TypeScript `^5.9.3`, the range of the
+  templates), `nuxt.config.ts` (extends core, today as `compatibilityDate`), `app/app.vue`
+  (`PlutoRoot` + `NuxtPage`), `tsconfig.json` and `.gitignore`.
+- `applyTemplate(dir, template, backend, layers, rangeOf)` (`src/template.ts`): `layer` swaps
+  `@plutocms/core` for that layer (`switchToSupabase`: `extends`, the package, the
+  `supabase-types` script), `remove` deletes paths, then `addLayers` (`src/layers.ts`) adds the
+  picked layers. A feature layer (shop, blog) replaces `@plutocms/supabase` in `extends` and in
+  `dependencies`. The layers menu shows Shop, Blog and 3D for Supabase, and 3D for the Git CMS.
+- `latestRange(name)` (`src/npm.ts`): the caret range of the latest version on npm, else
+  `latest`.
 
-- `git`: no change.
-- `supabase`: `"@plutocms/core"` in `extends` of `nuxt.config.ts` becomes
-  `"@plutocms/supabase-blog"`; `package.json` gets `@plutocms/supabase-blog` (the caret range of
-  its latest version on npm, from `latestRange()`, else `latest`) and the `supabase-types`
-  script; `content/` goes.
-
-## The admin template and its layers
-
-`applyAdminTemplate(dir, backend, layers, rangeOf)` in `src/layers.ts` sets the backend and the layers of the
-admin template (it extends `@plutocms/core` as downloaded). The shared helpers (`readExtends`,
-`writeExtends`, `updatePackage`, `switchToSupabase`) are in `src/backend.ts`. The blog uses them too.
-
-- `supabase`: the layer becomes `@plutocms/supabase` (as `switchToSupabase` does for the blog).
-- Each picked layer (`shop`, `blog`, `3d`) goes in `extends` and in `dependencies` (the latest caret range).
-- Shop and blog extend `@plutocms/supabase` themselves. When one is picked, `extends` has the feature layers
-  instead of `@plutocms/supabase`, and the package `@plutocms/supabase` leaves `dependencies`.
-- The layers menu (`layerOptions`) shows Shop, Blog and 3D for Supabase, and 3D for the Git CMS.
-  Tests: `src/layers.test.ts`.
-
-The CLI reads the layers in `extends` as plain names (`"@plutocms/core"`) or as the older
-`plutoLayer("@plutocms/core")`, and writes plain names. It removes a `plutoLayer` import that is
-not used anymore. It writes no `trustedDependencies`: Bun's default list has the packages that
-must run their install scripts. A config that does not extend `@plutocms/core` stops the CLI with
-an error.
-Tests: `src/blog-backend.test.ts` (a temporary folder, a fake `fetch`).
-
-## Download behavior
-
-The `downloadTemplate()` call:
-
-- Downloads to the directory the user specified
-- Uses `force: true` to allow overwriting existing files if the user confirmed
-- Returns the `source` URL, which is logged to the user for transparency
+The shared helpers (`readExtends`, `writeExtends`, `updatePackage`, `switchToSupabase`) are in
+`src/backend.ts`. Tests: `src/template.test.ts`, `src/layers.test.ts` (temporary folders, a fake
+`fetch`).
 
 ## Progress feedback
 
-During the download, a spinner displays: `Downloading Pluto template...`
-
-After the download succeeds, the CLI logs the template source and proceeds to environment file generation.
-
-## Error handling
-
-If the download fails, the process exits with a non-zero status and logs the error.
+A spinner shows `Downloading the template "<name>"...` (or `Writing the project...`), then the
+source. A failed download exits with a non-zero status.
