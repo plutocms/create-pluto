@@ -16,7 +16,7 @@ If `.env` does not exist, the CLI creates it with a header comment:
 
 The CLI always writes:
 
-- The website title from the user prompt: `NUXT_PUBLIC_WEBSITE_NAME` for the blog (both backends), `WEBSITE_NAME` for the shop.
+- The website title from the user prompt: `NUXT_PUBLIC_WEBSITE_NAME`, for every template.
 
 If Supabase is selected as the backend, the CLI also writes:
 

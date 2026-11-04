@@ -7,12 +7,11 @@ from a deployed site, editors sign in with a GitHub App. Other Git providers are
 
 ## Choice
 
-The backend is `git` with the label `Git CMS (Markdown files in Git)`. It allows only the
-`blog` template:
+The backend is `git` with the label `Git CMS (Markdown files in Git)`. The templates of the
+registry with a `git` backend use it (`blog`, `dashboard`), and `-t none`:
 
 ```bash
 create-pluto my-blog -t blog --backend git
-create-pluto my-blog -t core-blog   # the older name, the same choice
 ```
 
 ## A Git repository from the start
@@ -38,8 +37,8 @@ Pluto finds the repository from `PLUTO_GITHUB_REPO`, from Vercel, or (in develop
 ## Environment
 
 `setupCoreEnvVars()` in `src/choices/core-template.ts` writes `NUXT_PLUTO_GITHUB_SESSION_PASSWORD`.
-The value is `crypto.randomBytes(32).toString('base64url')`. It has 43 characters. The blog (both
-backends) gets the website title in `NUXT_PUBLIC_WEBSITE_NAME`. The shop still uses `WEBSITE_NAME`.
+The value is `crypto.randomBytes(32).toString('base64url')`. It has 43 characters. Every template
+gets the website title in `NUXT_PUBLIC_WEBSITE_NAME`.
 
 ## Next steps
 

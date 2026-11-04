@@ -1,3 +1,4 @@
+import type { Registry } from './registry.ts'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
@@ -14,7 +15,6 @@ import {
 } from '@clack/prompts'
 import { downloadTemplate } from 'giget'
 import { installDependencies } from 'nypm'
-import { applyBlogBackend, latestRange } from './blog-backend.ts'
 import { setupCoreEnvVars } from './choices/core-template.ts'
 import {
   setupSupabase,
@@ -22,20 +22,26 @@ import {
 } from './choices/supabase-template.ts'
 import { writeEnvFile } from './env.ts'
 import { initGitRepo } from './git.ts'
-import { applyAdminTemplate, getLayersFor, resolveLayers } from './layers.ts'
+import { getLayersFor, resolveLayers } from './layers.ts'
 import {
+  backends,
   getBackendsFor,
   getTemplatesFor,
-  menu,
   resolveChoice,
-  templateSource,
 } from './menu.ts'
+import { latestRange } from './npm.ts'
 import {
   detectRunningPackageManager,
   isSupportedPackageManager,
   nextStepCommands,
   PACKAGE_MANAGERS,
 } from './package-manager.ts'
+import { allTemplates, fetchRegistry, NO_TEMPLATE } from './registry.ts'
+import {
+  applyTemplate,
+  setPackageName,
+  writeScratchProject,
+} from './template.ts'
 
 interface ParsedArgs {
   projectDir?: string
@@ -46,8 +52,7 @@ interface ParsedArgs {
   layers?: string
 }
 
-const DOCS_URL =
-  'https://pluto.vulmix.dev/docs/start-here/quickstart'
+const DOCS_URL = 'https://pluto.vulmix.dev/docs/start-here/quickstart'
 
 const cwd = process.cwd()
 
@@ -122,7 +127,31 @@ function parseCliArgs(argv: string[]): ParsedArgs {
 }
 
 const args = parseCliArgs(process.argv.slice(2))
-const choice = resolveChoice(args.templateShortcut, args.backend)
+
+// The templates come from the registry of the templates repo. `-t none` needs none. Without the
+// registry, the menu offers "Start from scratch" only.
+let registry: Registry | undefined
+
+if (args.templateShortcut !== NO_TEMPLATE) {
+  try {
+    registry = await fetchRegistry()
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+
+    if (args.templateShortcut) {
+      log.error(`Could not load the list of templates: ${reason}`)
+
+      process.exit(1)
+    }
+
+    log.warn(
+      `Could not load the list of templates (${reason}). You can start from scratch.`
+    )
+  }
+}
+
+const templates = allTemplates(registry)
+const choice = resolveChoice(templates, args.templateShortcut, args.backend)
 
 if (!choice.ok) {
   log.error(choice.message)
@@ -192,7 +221,7 @@ const backend =
   choice.backend ??
   (await select({
     message: 'Pick a backend.',
-    options: choice.template ? getBackendsFor(choice.template) : menu.backends,
+    options: choice.template ? getBackendsFor(choice.template) : backends,
   }))
 
 if (isCancel(backend)) {
@@ -242,20 +271,11 @@ if (fs.existsSync(`${cwd}/nuxt.config.ts`)) {
 }
 
 // Select template
-const templateOptions = getTemplatesFor(String(backend))
-const onlyTemplate =
-  templateOptions.length === 1 ? templateOptions[0] : undefined
-
-if (onlyTemplate && !choice.template) {
-  log.info(`Using the only template available: ${onlyTemplate.label}`)
-}
-
 const templateChoice =
-  choice.template ??
-  onlyTemplate?.value ??
+  choice.template?.id ??
   (await select({
     message: 'Select a template to use. You can add more layers as needed.',
-    options: templateOptions,
+    options: getTemplatesFor(templates, String(backend)),
   }))
 
 if (isCancel(templateChoice)) {
@@ -264,11 +284,13 @@ if (isCancel(templateChoice)) {
   process.exit(0)
 }
 
-// The admin template can add layers. The flag gives them, else a question (with a terminal), else
-// none.
+const template = templates.find((item) => item.id === templateChoice)!
+
+// A template with `layers` in the registry (the dashboard, "Start from scratch") can add layers.
+// The flag gives them, else a question (with a terminal), else none.
 let layers: string[] = []
 
-if (templateChoice === 'admin') {
+if (template.layers) {
   const checked = resolveLayers(args.layers, String(backend))
 
   if (!checked.ok) {
@@ -299,7 +321,9 @@ if (templateChoice === 'admin') {
     layers = answer
   }
 } else if (args.layers !== undefined) {
-  log.error('--layers works with the "admin" template only.')
+  log.error(
+    '--layers works with the "dashboard" template and with "-t none" only.'
+  )
 
   process.exit(1)
 }
@@ -321,44 +345,37 @@ if (fs.readdirSync(templatePath).length > 0) {
   }
 }
 
-s.start(`Downloading Pluto template...`)
+if (template.id === NO_TEMPLATE) {
+  s.start('Writing the project...')
+  await writeScratchProject(templatePath, latestRange)
+  s.stop('Project written: a Nuxt app that extends Pluto.')
+} else {
+  s.start(`Downloading the template "${template.name}"...`)
 
-const { source } = await downloadTemplate(
-  templateSource(String(templateChoice)),
-  {
+  const { source } = await downloadTemplate(template.source, {
     dir: templatePath,
     force: true,
-  }
+  })
+
+  setPackageName(templatePath)
+  s.stop(`Template downloaded from ${color.green(source)}`)
+}
+
+// As downloaded, a template uses the Git CMS. Set the backend and the layers in it.
+await applyTemplate(
+  templatePath,
+  template,
+  String(backend),
+  layers,
+  latestRange
 )
-
-s.stop(`Template downloaded from ${color.green(source)}`)
-
-// The blog is one template for both backends. Set the backend in it.
-if (templateChoice === 'blog') {
-  applyBlogBackend(
-    templatePath,
-    String(backend),
-    backend === 'supabase'
-      ? await latestRange('@plutocms/supabase-blog')
-      : undefined
-  )
-}
-
-// The admin template starts on the Git CMS. Set the backend and the layers in it.
-if (templateChoice === 'admin') {
-  await applyAdminTemplate(templatePath, String(backend), layers, latestRange)
-}
 
 // Write to .env file if exists or create a new one
 const envPath = path.resolve(templatePath, '.env')
 const envVars: Record<string, string> = {}
 
-if (templateChoice === 'blog' || templateChoice === 'admin') {
-  // The blog and admin templates read the site name from NUXT_PUBLIC_WEBSITE_NAME.
-  envVars.NUXT_PUBLIC_WEBSITE_NAME = websiteTitle?.toString() ?? ''
-} else {
-  envVars.WEBSITE_NAME = websiteTitle?.toString() ?? ''
-}
+// Every template reads the site name from `websiteName` of the runtime config.
+envVars.NUXT_PUBLIC_WEBSITE_NAME = websiteTitle?.toString() ?? ''
 
 if (backend === 'git') {
   Object.assign(envVars, setupCoreEnvVars().envVars)

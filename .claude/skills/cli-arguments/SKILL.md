@@ -14,36 +14,36 @@ This sets the project directory without prompting.
 
 ## Template and backend
 
-- `-t <template>`, `--template <template>`, `--template=<template>`: `blog`, `shop` or `admin`.
+- `-t <template>`, `--template <template>`, `--template=<template>`: the id of a template of the
+  registry (`blog`, `supabase-shop`, `dashboard`, or any other free one), or `none` (start from
+  scratch). See the template-downloading skill.
 - `--backend <backend>`, `--backend=<backend>`: `git` (the Git CMS) or `supabase`.
 
 ```bash
 create-pluto my-blog -t blog --backend git
 create-pluto my-blog -t blog --backend supabase
-create-pluto my-shop -t shop
+create-pluto my-shop -t supabase-shop
+create-pluto my-app -t none --backend git
 ```
 
-Not every backend works with every template: the shop needs `supabase`, the blog works with
-both. A template with one backend gets it without a flag (`-t shop` means `supabase`). Without
-`--backend`, the blog asks for it. Without `-t`, the CLI asks for the backend, then for the
-template of that backend.
-
-The older names are aliases: `core-blog` (`blog` with `git`), `supabase-blog` and
-`supabase-shop`. An alias with another `--backend` (`-t core-blog --backend supabase`) is an
-error.
+Not every backend works with every template: the Supabase shop needs `supabase`, the blog works
+with both. A template with one backend gets it without a flag (`-t supabase-shop` means
+`supabase`). Without `--backend`, the blog asks for it. Without `-t`, the CLI asks for the
+backend, then for a starter template of that backend. A premium template is refused.
 
 A wrong name stops the CLI with status 1 and a message that lists the right names, for example
-`The "shop" template does not work with the "git" backend. Use --backend supabase.`
+`The "supabase-shop" template does not work with the "git" backend. Use --backend supabase.`
 
-## Layers (admin template)
+## Layers (dashboard, none)
 
-- `--layers <list>`, `--layers=<list>`: the layers to add to the `admin` template, separated by commas.
+- `--layers <list>`, `--layers=<list>`: the layers to add to a template with `layers` in the registry (`dashboard`)
+  or to `-t none`, separated by commas.
   The names are `shop`, `blog` and `3d`. `shop` and `blog` need `--backend supabase`; `3d` works with both.
   `none` (or an empty value) means no layers.
 
 ```bash
-create-pluto my-cms -t admin --backend git --layers 3d
-create-pluto my-cms -t admin --backend supabase --layers shop,3d
+create-pluto my-cms -t dashboard --backend git --layers 3d
+create-pluto my-cms -t dashboard --backend supabase --layers shop,3d
 ```
 
 Without `--layers`, the CLI asks (a multi-select) with a terminal, and adds no layers without one.
