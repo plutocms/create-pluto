@@ -51,17 +51,17 @@ afterEach(() => {
 })
 
 describe('getLayersFor', () => {
-  it('offers shop, blog and 3D on Supabase', () => {
+  it('offers shop, blog, 3D and SEO on Supabase', () => {
     assert.deepEqual(
       getLayersFor('supabase').map((layer) => layer.value),
-      ['shop', 'blog', '3d']
+      ['shop', 'blog', '3d', 'seo']
     )
   })
 
-  it('offers only 3D on the Git CMS', () => {
+  it('offers 3D and SEO on the Git CMS', () => {
     assert.deepEqual(
       getLayersFor('git').map((layer) => layer.value),
-      ['3d']
+      ['3d', 'seo']
     )
   })
 })

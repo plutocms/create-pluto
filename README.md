@@ -52,7 +52,7 @@ Pluto, with no pages of its own: `package.json`, `nuxt.config.ts`, `app/app.vue`
 `tsconfig.json` and `.gitignore`. It is a good start for an agent.
 
 **Dashboard only** and **Start from scratch** can add layers. The CLI asks which (Supabase: Shop,
-Blog, 3D; Git CMS: 3D). Pass `--layers shop,3d` to skip the question (`--layers none` for no
+Blog, 3D, SEO; Git CMS: 3D, SEO). Pass `--layers shop,3d` to skip the question (`--layers none` for no
 layers). Without a terminal, the CLI adds no layers.
 
 ```bash
