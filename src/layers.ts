@@ -45,6 +45,14 @@ export const layerOptions: LayerOption[] = [
     backends: ['git', 'supabase'],
     feature: false,
   },
+  {
+    value: 'seo',
+    label: 'SEO',
+    hint: 'SEO fields, a sitemap, robots.txt and an RSS feed (works with both backends)',
+    package: '@plutocms/seo',
+    backends: ['git', 'supabase'],
+    feature: false,
+  },
 ]
 
 export function getLayersFor(backend: string): LayerOption[] {

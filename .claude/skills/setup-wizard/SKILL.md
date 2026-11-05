@@ -11,7 +11,7 @@ The wizard asks for four pieces of information in this order:
 3. **Backend** — `Supabase` or `Git CMS (Markdown files in Git)` (`git`). `--backend` skips it. With `-t`, the list shows only the backends of that template, and a template with one backend (the Supabase shop) skips it.
 4. **Template choice** — The starter templates of the registry that the chosen backend allows, then **Start from scratch** (`none`). The label is the name in the registry, the hint its description. Today: `Blog (minimalist)` (both backends), `Shop (Supabase)` (Supabase), `Dashboard only` (both, no public site). See the template-downloading skill.
 
-5. **Layers** (`dashboard` and `none` only) — A multi-select of the layers to add: Shop, Blog and 3D for Supabase, 3D for the Git CMS. `--layers` skips it. Without a terminal, no layers.
+5. **Layers** (`dashboard` and `none` only) — A multi-select of the layers to add: Shop, Blog, 3D and SEO for Supabase, 3D and SEO for the Git CMS. `--layers` skips it. Without a terminal, no layers.
 
 ## Conditional prompts
 

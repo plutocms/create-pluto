@@ -39,7 +39,7 @@ it yet"); a template with one backend gets it. The old names (`core-blog`, `supa
   `@plutocms/core` for that layer (`switchToSupabase`: `extends`, the package, the
   `supabase-types` script), `remove` deletes paths, then `addLayers` (`src/layers.ts`) adds the
   picked layers. A feature layer (shop, blog) replaces `@plutocms/supabase` in `extends` and in
-  `dependencies`. The layers menu shows Shop, Blog and 3D for Supabase, and 3D for the Git CMS.
+  `dependencies`. The layers menu shows Shop, Blog, 3D and SEO for Supabase, and 3D and SEO for the Git CMS.
 - `latestRange(name)` (`src/npm.ts`): the caret range of the latest version on npm, else
   `latest`.
 
