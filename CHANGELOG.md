@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/plutocms/create-pluto/compare/v0.15.0...v0.16.0) (2026-11-05)
+
+
+### Features
+
+* SEO as an optional layer (@plutocms/seo), on both backends ([#73](https://github.com/plutocms/create-pluto/issues/73)) ([512d951](https://github.com/plutocms/create-pluto/commit/512d9516af64271e3f77e015078308fabe440e3f))
+
 ## [0.15.0](https://github.com/plutocms/create-pluto/compare/v0.14.1...v0.15.0) (2026-11-04)
 
 
