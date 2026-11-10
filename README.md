@@ -22,6 +22,7 @@ npm create pluto@latest my-blog -t blog --backend git --pm pnpm
 | `--backend`                 | `git` (the Git CMS) or `supabase`.                                    |
 | `--layers`                  | Layers to add to `dashboard` or `none`, for example `shop,3d`.        |
 | `--pm`, `--package-manager` | `npm`, `pnpm`, `yarn`, `bun` or `deno`.                               |
+| `--seo`, `--no-seo`         | Add the SEO layer, or not. Skips the question of the blog template.   |
 | `--no-install`              | Do not install the dependencies.                                      |
 
 ## Templates
@@ -50,6 +51,10 @@ the files that only one backend uses (the sample posts of the Git CMS) and the `
 **Start from scratch** (`-t none`) downloads nothing. The CLI writes a Nuxt app that extends
 Pluto, with no pages of its own: `package.json`, `nuxt.config.ts`, `app/app.vue`,
 `tsconfig.json` and `.gitignore`. It is a good start for an agent.
+
+The **Blog** template asks "Add SEO?" (yes by default): the SEO layer gives the posts their SEO
+fields, and the site its head tags, `sitemap.xml`, `robots.txt` and an RSS feed. `--seo` and
+`--no-seo` skip the question. Without a terminal, the CLI adds it.
 
 **Dashboard only** and **Start from scratch** can add layers. The CLI asks which (Supabase: Shop,
 Blog, 3D, SEO; Git CMS: 3D, SEO). Pass `--layers shop,3d` to skip the question (`--layers none` for no

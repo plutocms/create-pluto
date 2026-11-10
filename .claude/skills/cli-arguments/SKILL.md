@@ -38,7 +38,8 @@ A wrong name stops the CLI with status 1 and a message that lists the right name
 
 - `--layers <list>`, `--layers=<list>`: the layers to add to a template with `layers` in the registry (`dashboard`)
   or to `-t none`, separated by commas.
-  The names are `shop`, `blog` and `3d`. `shop` and `blog` need `--backend supabase`; `3d` works with both.
+  The names are `shop`, `blog`, `3d` and `seo`. `shop` and `blog` need `--backend supabase`; `3d` and
+  `seo` work with both.
   `none` (or an empty value) means no layers.
 
 ```bash
@@ -49,6 +50,18 @@ create-pluto my-cms -t dashboard --backend supabase --layers shop,3d
 Without `--layers`, the CLI asks (a multi-select) with a terminal, and adds no layers without one.
 `--layers` with another template, an unknown name, or a layer the backend does not allow stops the CLI
 with status 1. `resolveLayers()` in `src/layers.ts` validates it.
+
+## SEO
+
+A template with `seo: true` in the registry (the blog) asks "Add SEO?" (a confirm, yes by default).
+Without a terminal the answer is yes. `--seo` and `--no-seo` skip the question, for any template.
+
+- Yes: `withSeo()` adds `seo` to the layers, and `addLayers` puts `@plutocms/seo` in `extends`
+  and `package.json`.
+- No: `applyTemplate(..., without)` calls `removeLayers()`, so a template that still ships the
+  layer loses it too. The template itself ships without `@plutocms/seo`.
+
+Tests: `src/layers.test.ts` ("withSeo", "applyTemplate and the SEO choice").
 
 ## Package manager and install
 

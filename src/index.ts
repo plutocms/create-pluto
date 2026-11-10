@@ -22,7 +22,7 @@ import {
 } from './choices/supabase-template.ts'
 import { writeEnvFile } from './env.ts'
 import { initGitRepo } from './git.ts'
-import { getLayersFor, resolveLayers } from './layers.ts'
+import { getLayersFor, resolveLayers, withSeo } from './layers.ts'
 import {
   backends,
   getBackendsFor,
@@ -50,6 +50,7 @@ interface ParsedArgs {
   packageManager?: string
   install?: boolean
   layers?: string
+  seo?: boolean
 }
 
 const DOCS_URL = 'https://pluto.vulmix.dev/docs/start-here/quickstart'
@@ -110,6 +111,16 @@ function parseCliArgs(argv: string[]): ParsedArgs {
 
     if (arg?.startsWith('--layers=')) {
       parsedArgs.layers = arg.slice('--layers='.length)
+      continue
+    }
+
+    if (arg === '--seo') {
+      parsedArgs.seo = true
+      continue
+    }
+
+    if (arg === '--no-seo') {
+      parsedArgs.seo = false
       continue
     }
 
@@ -328,6 +339,34 @@ if (template.layers) {
   process.exit(1)
 }
 
+// SEO. A template with `seo` in the registry (the blog) asks to add the SEO layer: its fields in
+// the post editor, the head tags, sitemap.xml, robots.txt and an RSS feed. Yes by default, also
+// without a terminal. `--seo` and `--no-seo` skip the question, for any template.
+let seo = args.seo
+
+if (seo === undefined && template.seo) {
+  if (process.stdin.isTTY) {
+    const answer = await confirm({
+      message:
+        'Add SEO? (SEO fields for posts, sitemap.xml, robots.txt and an RSS feed)',
+      initialValue: true,
+    })
+
+    if (isCancel(answer)) {
+      cancel('Operation cancelled.')
+
+      process.exit(0)
+    }
+
+    seo = answer
+  } else {
+    seo = true
+  }
+}
+
+layers = withSeo(layers, seo)
+const withoutLayers = seo === false ? ['seo'] : []
+
 // Download template
 
 // If folder is not empty, ask for confirmation to continue
@@ -367,7 +406,8 @@ await applyTemplate(
   template,
   String(backend),
   layers,
-  latestRange
+  latestRange,
+  withoutLayers
 )
 
 // Write to .env file if exists or create a new one

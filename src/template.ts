@@ -2,7 +2,7 @@ import type { TemplateEntry } from './registry.ts'
 import fs from 'node:fs'
 import path from 'node:path'
 import { switchToSupabase } from './backend.ts'
-import { addLayers } from './layers.ts'
+import { addLayers, removeLayers } from './layers.ts'
 
 /**
  * Sets the backend and the layers of a project, from the changes of the
@@ -14,7 +14,9 @@ export async function applyTemplate(
   template: TemplateEntry,
   backend: string,
   layers: string[],
-  rangeOf: (name: string) => Promise<string>
+  rangeOf: (name: string) => Promise<string>,
+  /** Layers to take out of the template (the user said no to SEO). */
+  without: string[] = []
 ): Promise<void> {
   const changes = template.backends[backend] ?? {}
 
@@ -27,6 +29,7 @@ export async function applyTemplate(
   }
 
   await addLayers(dir, layers, rangeOf)
+  removeLayers(dir, without)
 }
 
 const NOT_NAME_CHARS = /[^a-z0-9._~-]+/g

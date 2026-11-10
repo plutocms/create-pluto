@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import { getLayersFor, resolveLayers } from './layers.ts'
+import { getLayersFor, resolveLayers, withSeo } from './layers.ts'
 import { applyTemplate } from './template.ts'
 
 // The dashboard entry of the registry.
@@ -181,5 +181,77 @@ describe('applyTemplate with layers (the dashboard)', () => {
       /extends: \["@plutocms\/supabase", "@plutocms\/3d"\]/
     )
     assert.ok(readJson('package.json').dependencies['@plutocms/supabase'])
+  })
+})
+
+describe('withSeo', () => {
+  it('adds seo once', () => {
+    assert.deepEqual(withSeo([], true), ['seo'])
+    assert.deepEqual(withSeo(['3d', 'seo'], true), ['3d', 'seo'])
+  })
+
+  it('takes seo out', () => {
+    assert.deepEqual(withSeo(['3d', 'seo'], false), ['3d'])
+  })
+
+  it('keeps the list without a choice', () => {
+    assert.deepEqual(withSeo(['3d'], undefined), ['3d'])
+  })
+})
+
+describe('applyTemplate and the SEO choice (the blog)', () => {
+  // The blog entry of the registry: it asks to add the SEO layer.
+  const blog: TemplateEntry = {
+    id: 'blog',
+    name: 'Blog',
+    description: '',
+    category: 'blog',
+    access: 'free',
+    seo: true,
+    source: '',
+    backends: {
+      git: {},
+      supabase: { layer: '@plutocms/supabase-blog', remove: ['content'] },
+    },
+  }
+
+  it('adds the SEO layer next to core', async () => {
+    await applyTemplate(dir, blog, 'git', ['seo'], rangeOf)
+
+    assert.match(
+      readConfig(),
+      /extends: \["@plutocms\/core", "@plutocms\/seo"\]/
+    )
+    assert.equal(
+      readJson('package.json').dependencies['@plutocms/seo'],
+      '^1.0.0-@plutocms/seo'
+    )
+  })
+
+  it('adds the SEO layer next to the Supabase blog layer', async () => {
+    await applyTemplate(dir, blog, 'supabase', ['seo'], rangeOf)
+
+    assert.match(
+      readConfig(),
+      /extends: \["@plutocms\/supabase-blog", "@plutocms\/seo"\]/
+    )
+  })
+
+  it('takes the SEO layer out of a template that ships it', async () => {
+    fs.writeFileSync(
+      path.join(dir, 'nuxt.config.ts'),
+      'export default defineNuxtConfig({\n  extends: ["@plutocms/core", "@plutocms/seo"],\n})\n'
+    )
+    const pkg = readJson('package.json')
+    pkg.dependencies['@plutocms/seo'] = '^0.2.0'
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(pkg))
+
+    await applyTemplate(dir, blog, 'git', [], rangeOf, ['seo'])
+
+    assert.match(readConfig(), /extends: \["@plutocms\/core"\]/)
+    assert.equal(
+      readJson('package.json').dependencies['@plutocms/seo'],
+      undefined
+    )
   })
 })
