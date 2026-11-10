@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/plutocms/create-pluto/compare/v0.16.0...v0.17.0) (2026-11-10)
+
+
+### Features
+
+* ask "Add SEO?" for the blog template ([#75](https://github.com/plutocms/create-pluto/issues/75)) ([f05c8f1](https://github.com/plutocms/create-pluto/commit/f05c8f13fd45ca36da3be9ff2079596799dc12bf))
+
 ## [0.16.0](https://github.com/plutocms/create-pluto/compare/v0.15.0...v0.16.0) (2026-11-05)
 
 
