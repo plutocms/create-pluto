@@ -103,6 +103,40 @@ export function resolveLayers(
 }
 
 /**
+ * The layers after the SEO choice: `true` adds `seo`, `false` takes it out, `undefined` keeps
+ * the list.
+ */
+export function withSeo(layers: string[], seo: boolean | undefined): string[] {
+  if (seo === true) {
+    return layers.includes('seo') ? layers : [...layers, 'seo']
+  }
+  if (seo === false) {
+    return layers.filter((layer) => layer !== 'seo')
+  }
+  return layers
+}
+
+/**
+ * Takes layers out of a project: the `extends` list and the packages. A template can ship a layer
+ * that the user does not want (an older blog template ships the SEO layer).
+ */
+export function removeLayers(dir: string, layers: string[]): void {
+  const packages = layerOptions
+    .filter((layer) => layers.includes(layer.value))
+    .map((layer) => layer.package)
+
+  if (packages.length === 0) {
+    return
+  }
+
+  writeExtends(
+    dir,
+    readExtends(dir).filter((name) => !packages.includes(name))
+  )
+  updatePackage(dir, { remove: packages })
+}
+
+/**
  * Adds the layers to a project that already has its backend: the `extends` list and the
  * packages. A feature layer replaces `@plutocms/supabase`, which it brings. `rangeOf` gives the
  * version range of a package (the latest on npm).

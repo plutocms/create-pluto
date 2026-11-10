@@ -9,7 +9,7 @@ policies shared by every project here.
 - Interactive setup wizard: prompts for project directory, website title, backend,
   template choice (the starters of the registry, then "Start from scratch") and package manager, installs the dependencies with nypm, and prints short
   next steps. @.claude/skills/setup-wizard/SKILL.md
-- CLI argument support: accepts project directory, `-t <id>` (any free template of the registry, `none` from scratch), `--layers`, `--backend git|supabase`, `--pm` and `--no-install`
+- CLI argument support: accepts project directory, `-t <id>` (any free template of the registry, `none` from scratch), `--layers`, `--seo`/`--no-seo` (the blog asks "Add SEO?"), `--backend git|supabase`, `--pm` and `--no-install`
   to skip interactive prompts. @.claude/skills/cli-arguments/SKILL.md
 - Template downloading: reads the registry of `plutocms/templates` (`templates.json`), downloads the
   folder of a template with giget, names the project after its folder, and applies the backend

@@ -23,6 +23,8 @@ export interface TemplateEntry {
   starter?: boolean
   /** The CLI can add layers (`--layers`). */
   layers?: boolean
+  /** The CLI asks to add the SEO layer (`--seo`, `--no-seo`). Yes by default. */
+  seo?: boolean
   /** A giget source, for example `gh:plutocms/templates/templates/blog`. */
   source: string
   demo?: string
